@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=TuxScape2
+Comment=SpaceTux adventure
+StartupNotify=false
+Exec=tuxscape2
+Icon=tuxscape2
+Terminal=false
+Type=Application
+Categories=Game;ArcadeGame;KidsGame;Graphics

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+	<id>com.voxdsp.TuxScape2</id>
+	<metadata_license>CC-BY-4.0</metadata_license>
+	<project_license>MIT</project_license>
+	<developer_name>James William Fletcher</developer_name>
+	<launchable type="desktop-id">com.voxdsp.TuxScape2.desktop</launchable>
+	<name>TuxScape2</name>
+	<summary>SpaceTux adventure</summary>
+	<description>
+		<p>Tux fights alien space ships and craft!</p>
+		<ul>
+			<li>Mouse = Rotate Camera, Scroll = Zoom Camera</li>
+			<li>A,D / Arrows = ???</li>
+		</ul>
+		<p>Dummy text.</p>
+	</description>
+	<screenshots>
+		<screenshot type="default">
+			<image>https://screenshot.png</image>
+			<caption>Description</caption>
+		</screenshot>
+	</screenshots>
+	<url type="homepage">https://github.com/mrbid/tuxscape2</url>
+	<releases>
+		<release version="1.0" date="2024-06-03" />
+	</releases>
+	<content_rating type="oars-1.0" />
+</component>

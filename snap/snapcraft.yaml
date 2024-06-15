@@ -1,0 +1,42 @@
+name: tuxscape2
+base: core22
+version: '1.0'
+license: GPL-2.0-only
+summary: SpaceTux adventure
+description: |
+  Check terminal output when program is executed for more information.
+
+grade: stable
+confinement: strict
+
+architectures:
+  - build-on: [amd64]
+    build-for: [amd64]
+  - build-on: [arm64]
+    build-for: [arm64]
+  - build-on: [armhf]
+    build-for: [armhf]
+
+apps:
+  tuxscape2:
+    extensions: [gnome]
+    command: tuxscape2
+    plugs:
+    - desktop
+    - desktop-legacy
+    - gsettings
+    - opengl
+    - wayland
+    - x11
+
+parts:
+  tuxscape2:
+    source: https://github.com/mrbid/tuxscape2
+    source-type: git
+    plugin: make
+    source-subdir: snap
+    build-packages:
+    - libglfw3-dev
+    stage-packages:
+    - libglfw3
+    - libgles2
