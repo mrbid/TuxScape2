@@ -1,6 +1,6 @@
 /*
     James William Fletcher (github.com/mrbid)
-        October 2022 - June 2024
+        June 2024
 
     Converts ASCII PLY (.ply) file to C OpenGL buffers.
     

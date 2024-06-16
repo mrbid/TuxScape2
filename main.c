@@ -644,16 +644,16 @@ void main_loop()
     for(uint i=0; i<207; i++)
     {
         // ship sphere collision with planet/island?
-        if(vDistSq(esModelArray[i].pos,  pp) < (esModelArray[i].rsq*2.f)+esModelArray[vis].rsq)
+        if(vDistSq(esModelArray[i].pos,  pp) < esModelArray[i].rsq*3.3f)
         {
             const uint niter = esModelArray[i].nv*3;
             vec bump = (vec){0.f, 0.f, 0.f}; // force against collision (bump back dir)
             float bump_acc = 0.f; // total to divide bump by at end
             for(uint j = 0; j < niter; j+=3) // check if the ship hit any vertices and correct course
             {
-                const float vx = esModelArray[i].vertices[j];
-                const float vy = esModelArray[i].vertices[j+1];
-                const float vz = esModelArray[i].vertices[j+2];
+                const float vx = esModelArray[i].vertices[j],
+                            vy = esModelArray[i].vertices[j+1],
+                            vz = esModelArray[i].vertices[j+2];
                 if(vDistSq((vec){vx, vy, vz}, pp) < esModelArray[vis].rsq)
                 {
                     bump.x += esModelArray[i].normals[j];
@@ -958,7 +958,7 @@ int main(int argc, char** argv)
     register_p196();register_p197();register_p198();register_p199();register_p200();register_p201();register_p202();
     register_p203();register_p204();register_p205();register_p206();
 
-    // ships hq,mq,lq 0-66 (67)
+    // ships hq,mq,lq 0-67 (68)
     register_h0();register_m0();register_l0();register_h1();register_m1();register_l1();register_h2();
     register_m2();register_l2();register_h3();register_m3();register_l3();register_h4();register_m4();
     register_l4();register_h5();register_m5();register_l5();register_h6();register_m6();register_l6();
