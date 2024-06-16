@@ -626,7 +626,7 @@ void main_loop()
     mSetPos(&view, (vec){0.f, 0.f, dzoom});
     mRotate(&view, yrot, 1.f, 0.f, 0.f);
     mRotate(&view, xrot, 0.f, 0.f, 1.f);
-    mTranslate(&view, -pp.x, -pp.y+0.016839f, -pp.z-0.059675f);
+    mTranslate(&view, -pp.x, -pp.y+0.017f, -pp.z-0.075f);
 
     //printf("%f %f %f %f %f %f \n", pp.x, pp.y, pp.z, pr, xrot, yrot);
 
