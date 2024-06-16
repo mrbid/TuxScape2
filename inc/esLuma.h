@@ -43,6 +43,10 @@ GLint lightness_id;
 typedef struct{float x,y,z,w;} vec;  // Vector
 typedef struct {float m[4][4];} mat; // Matrix
 
+// render states
+mat projection, view, model, modelview;
+#define updateModelView(); mMul(&modelview,&model,&view);glUniformMatrix4fv(modelview_id,1,GL_FALSE,(float*)&modelview.m[0][0]);
+
 // ESModel ✨
 typedef struct
 {
@@ -1381,7 +1385,8 @@ void mFrustum(mat *r, const float left, const float right, const float bottom, c
 void mPerspective(mat *r, const float fovy, const float aspect, const float nearZ, const float farZ)
 {
     float frustumW, frustumH;
-    frustumH = tanf(fovy * 0.002777778078f * PI ) * nearZ; // 0x3b360b62
+    frustumH = tanf(fovy * 0.00872664625f) * nearZ;
+    //frustumH = tanf ( fovy / 360.0f * PI ) * nearZ;
     frustumW = frustumH * aspect;
     mFrustum(r, -frustumW, frustumW, -frustumH, frustumH, nearZ, farZ);
 }

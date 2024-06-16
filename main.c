@@ -67,8 +67,6 @@ void timestamp(char* ts){const time_t tt=time(0);strftime(ts,16,"%H:%M:%S",local
 #define sint GLint
 #define MAX_MODELS 411 // hard limit, be aware and increase if needed
 #include "inc/esLuma.h"
-#define updateModelView(); mMul(&modelview,&model,&view);glUniformMatrix4fv(modelview_id,1,GL_FALSE,(float*)&modelview.m[0][0]);
-#define FAR_DISTANCE 777.f
 #include "assets/high/p0.h"  //0
 #include "assets/high/p1.h"  //1
 #include "assets/high/p2.h"  //2
@@ -488,13 +486,11 @@ void timestamp(char* ts){const time_t tt=time(0);strftime(ts,16,"%H:%M:%S",local
 //*************************************
 const char appTitle[]="TuxScape 2";
 GLFWwindow* wnd;
-uint winw=1024, winh=768;
+uint winw=1024, winh=768, ks[7]={0};
 float t=0.f, dt=0.f, lt=0.f, fc=0.f, lfct=0.f, aspect;
 
-// render state
-mat projection, view, model, modelview;
-
 // camera vars
+#define FAR_DISTANCE 777.f
 uint focus_cursor = 0;
 uint free_look = 0;
 double sens = 0.003;
@@ -505,7 +501,6 @@ float dzoom = -0.3f;
 float zoom = -1.3f;
 
 // player
-uint ks[7]={0};
 int vis=207; // render id
 vec pp, pd, pv; // pos, dir, velocity
 float pr = 0.f; // rot
@@ -528,12 +523,7 @@ void resetGame(uint mode)
     xrot = -7.019932f;
     yrot =  1.431000f;
 
-    vis=207;
-
-    // pp = (vec){0.f, 5.f, 0.f};
-    // pr = 0.f;
-    // xrot = 0.f;
-    // yrot = 1.3f;
+    vis=408;
 
     if(mode == 1)
     {
@@ -627,7 +617,7 @@ void main_loop()
         xrot += (float)((lx-mx)*sens);
         yrot += (float)((ly-my)*sens);
 
-        if(yrot > 1.5f){yrot = 1.5f;}
+        if(yrot > d2PI){yrot = d2PI;}
         if(yrot < 0.5f){yrot = 0.5f;}
 
         lx = mx, ly = my;
@@ -649,6 +639,7 @@ void main_loop()
 
     ///
 
+    // render planets/islands
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (float*)&view.m[0][0]);
     for(uint i=0; i<207; i++)
     {
@@ -689,6 +680,7 @@ void main_loop()
         esBindRender(i);
     }
 
+    // render player ship
     mIdent(&model);
     mSetPos(&model, pp);
     if(free_look == 0) // ship rotation
@@ -882,16 +874,16 @@ int main(int argc, char** argv)
     printf("e.g; ./tuxscape2 16\n");
     printf("----\n");
 #endif
-    printf("Q = Push to Talk\n");
-    printf("Mouse 3/4 = Shoot\n");
+    // printf("Q = Push to Talk\n");
+    // printf("Mouse 3/4 = Shoot/Boost\n"); // soon
     printf("Scroll = Zoom Camera\n");
     printf("E + Scroll = Scroll Ships\n");
     printf("Mouse = Rotate Camera & Fly Heading\n");
     printf("Right Click = Toggle free/orbit cam.\n");
     printf("W,A,S,D / Arrow Keys = Fly Directions\n");
-    printf("Space + Shift = Up and Down altitude.\n");
+    printf("Space / Shift = Up and Down altitude.\n");
     printf("F = FPS to console.\n");
-    //printf("R = Reset game.\n");
+    printf("R = Reset game.\n");
     printf("----\n");
     printf("All assets generated using LUMA GENIE (https://lumalabs.ai/genie).\n");
     printf("----\n");
@@ -1003,7 +995,6 @@ int main(int argc, char** argv)
 // configure render options
 //*************************************
     makeLambert();
-    makeFullbright();
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -1030,8 +1021,7 @@ int main(int argc, char** argv)
     srand(time(0));
     srandf(time(0));
     t = fTime();
-    lt = t;
-    lfct = t;
+    lt = t, lfct = t;
 
     // game init
     resetGame(0);

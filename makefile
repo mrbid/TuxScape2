@@ -32,6 +32,7 @@ dbg:
 	release/$(name)_dbg
 
 deps:
+	@echo https://github.com/glfw/glfw/releases/
 	@echo https://emscripten.org/docs/getting_started/downloads.html
 	@echo https://github.com/upx/upx/releases/tag/v4.2.4
 	sudo apt install --assume-yes libglfw3-dev libglfw3
