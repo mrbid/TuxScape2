@@ -530,6 +530,8 @@ void resetGame(uint mode)
 
     ships[11] = (ship){13.37f, 1.337f, 0.5f, 0.25f, 0.016f};
 
+    ships[67] = (ship){9.f, 2.3f, 0.5f, 0.5f, 0.025f};
+
     dzoom = -0.3f;
     zoom = -1.3f;
     pd = (vec){0.f, 1.f, 0.f};
