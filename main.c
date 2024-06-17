@@ -1,6 +1,8 @@
 /*
     James William Fletcher ( github.com/mrbid )
         June 2024
+
+    ? view distance culling for low end devices?
 */
 
 //#pragma GCC diagnostic ignored "-Wunused-result"
@@ -501,13 +503,14 @@ float zoom = -1.3f;
 
 // player
 uint sid=67; // ship id
-int vis=207; // render id
-vec pp, pd, pv; // pos, dir, velocity
-float pr = 0.f; // rot
+int vis=207; // ship render id
+vec pp, pv; // player: position, velocity
+float pr = 0.f; // ship rot/dir in radians
 #define pa ships[sid].accel
 #define pb ships[sid].brake
 #define pes ships[sid].elev_speed
 #define pss ships[sid].straf_speed
+#define pts ships[sid].turn_speed
 typedef struct {float accel, brake, elev_speed, straf_speed, turn_speed;} ship;
 #define MAX_SHIPS 68
 ship ships[MAX_SHIPS];
@@ -534,7 +537,6 @@ void resetGame(uint mode)
 
     dzoom = -0.3f;
     zoom = -1.3f;
-    pd = (vec){0.f, 1.f, 0.f};
     pv = (vec){0.f, 0.f, 0.f};
 
     pp = (vec){-12.738008f, -13.827285f, 2.864779f};
@@ -705,7 +707,7 @@ void main_loop()
     mSetPos(&model, pp);
     if(free_look == 0) // ship rotation
     {
-        float prd = -(pr+xrot)*ships[sid].turn_speed;
+        float prd = -(pr+xrot)*pts;
         // if(prd > 0.016f)      {prd =  0.016f;}
         // else if(prd < -0.016f){prd = -0.016f;}
         pr += prd;
@@ -714,7 +716,7 @@ void main_loop()
     }
     else if(free_look == 1)
     {
-        float prd = -(pr+xrot)*ships[sid].turn_speed;
+        float prd = -(pr+xrot)*pts;
         if(fabsf(prd) < 0.0006f){free_look=2;}
         pr += prd;
         mRotZ(&model, pr);
