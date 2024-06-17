@@ -762,10 +762,6 @@ void key_callback(GLFWwindow* wnd, int key, int scancode, int action, int mods)
                 fc = 0;
             }
         }
-        // else if(key == GLFW_KEY_E)
-        // {
-        //     //
-        // }
         else if(key == GLFW_KEY_R) // reset game
         {
             resetGame(1);
@@ -798,12 +794,7 @@ void scroll_callback(GLFWwindow* wnd, double xoffset, double yoffset)
     {
         if(yoffset < 0.0){vis-=3;sid--;}else{vis+=3;sid++;}
         if(vis < 207){vis=408;sid=67;}else if(vis > 408){vis=207;sid=0;}
-        printf("[S-%u] %g %g %g %g %g\n", sid,
-            ships[sid].accel,
-            ships[sid].brake,
-            ships[sid].elev_speed,
-            ships[sid].straf_speed,
-            ships[sid].turn_speed);
+        printf("[S-%u] %g %g %g %g %g\n",sid,pa,pb,pes,pss,pts);
     }
     else
     {
