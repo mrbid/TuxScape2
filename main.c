@@ -522,17 +522,17 @@ ship ships[MAX_SHIPS];
 void resetGame(uint mode)
 {
     //for(uint i=0; i < MAX_SHIPS; i++){ships[i] = (ship){9.f, 2.3f, 0.5f, 0.5f, 0.025f};}
-    for(uint i=0; i < MAX_SHIPS; i++){ships[i] = (ship){esRandFloat(4.20f, 24.f), esRandFloat(1.f, 6.f), esRandFloat(0.25f, 1.f), esRandFloat(0.25f, 1.f), esRandFloat(0.0025f, 0.042f)};}
-    ships[0] = (ship){3.f, 2.3f, 0.5f, 0.5f, 0.005f};
-    ships[1] = (ship){9.f, 2.3f, 0.5f, 0.5f, 0.025f}; //b
-    ships[2] = (ship){11.3f, 1.93f, 0.5f, 0.67f, 0.015f};
-    ships[3] = (ship){11.3f, 1.93f, 0.5f, 0.25f, 0.015f};
-    ships[4] = (ship){13.37f, 4.20f, 0.33f, 0.22f, 0.033f};
-    ships[5] = (ship){16.67f, 2.22f, 0.75f, 0.33f, 0.0276f};
-    ships[6] = (ship){12.21f, 1.23f, 0.5f, 0.5f, 0.0276f};
-    ships[7] = (ship){8.f, 4.20f, 0.25f, 0.25f, 0.01f};
-    ships[8] = (ship){13.31f, 2.22f, 0.5f, 0.65f, 0.013f}; //a
-    ships[9] = (ship){16.61f, 3.33f, 0.33f, 0.33f, 0.022f};
+    //for(uint i=0; i < MAX_SHIPS; i++){ships[i] = (ship){esRandFloat(4.20f, 24.f), esRandFloat(1.f, 6.f), esRandFloat(0.25f, 1.f), esRandFloat(0.25f, 1.f), esRandFloat(0.0025f, 0.042f)};}
+    ships[0]  = (ship){3.f, 2.3f, 0.5f, 0.5f, 0.005f};
+    ships[1]  = (ship){9.f, 2.3f, 0.5f, 0.5f, 0.025f}; //b
+    ships[2]  = (ship){11.3f, 1.93f, 0.5f, 0.67f, 0.015f};
+    ships[3]  = (ship){11.3f, 1.93f, 0.5f, 0.25f, 0.015f};
+    ships[4]  = (ship){13.37f, 4.20f, 0.33f, 0.22f, 0.033f};
+    ships[5]  = (ship){16.67f, 2.22f, 0.75f, 0.33f, 0.0276f};
+    ships[6]  = (ship){12.21f, 1.23f, 0.5f, 0.5f, 0.0276f};
+    ships[7]  = (ship){8.f, 4.20f, 0.25f, 0.25f, 0.01f};
+    ships[8]  = (ship){13.31f, 2.22f, 0.5f, 0.65f, 0.013f}; //a
+    ships[9]  = (ship){4.644f, 3.33f, 0.33f, 0.33f, 0.022f};
     ships[10] = (ship){13.31f, 2.22f, 0.5f, 0.65f, 0.013f}; //a
     ships[11] = (ship){13.37f, 1.337f, 0.5f, 0.5f, 0.016f};
     ships[12] = (ship){17.71f, 1.337f, 0.5f, 0.5f, 0.025f};
@@ -546,15 +546,15 @@ void resetGame(uint mode)
     ships[20] = (ship){10.7f, 1.11f, 0.5f, 0.5f, 0.011f};
     ships[21] = (ship){18.81f, 2.22f, 0.4f, 0.4f, 0.023f};
     ships[22] = (ship){18.81f, 3.33f, 0.5f, 0.5f, 0.025f};
-    ships[23] = (ship){8.88f, 1.33f, 0.44f, 0.44f, 0.02f};
+    ships[23] = (ship){3.88f, 1.33f, 0.44f, 0.44f, 0.01f};
     ships[24] = (ship){14.41f, 2.22f, 0.44f, 0.44f, 0.0272f};
     ships[25] = (ship){9.f, 2.3f, 0.5f, 0.5f, 0.025f}; //b
     ships[26] = (ship){11.11f, 2.13f, 0.23f, 0.5f, 0.0263f};
     ships[27] = (ship){14.41f, 3.33f, 0.777f, 0.777f, 0.044f};
     ships[28] = (ship){12.21f, 1.11f, 0.6f, 0.6f, 0.033f};
-    ships[29] = (ship){8.88f, 1.11f, 0.4f, 0.3f, 0.02f};
+    ships[29] = (ship){2.44f, 1.11f, 0.4f, 0.3f, 0.01f};
     ships[30] = (ship){12.21f, 1.68f, 0.466f, 0.466f, 0.008f};
-    ships[31] = (ship){8.88f, 1.11f, 0.3f, 0.4f, 0.02f};
+    ships[31] = (ship){1.33f, 1.11f, 0.3f, 0.4f, 0.01f};
     ships[32] = (ship){9.87f, 1.77f, 0.5f, 0.5f, 0.021f};
     ships[33] = (ship){22.22f, 4.20f, 0.48f, 0.48f, 0.03f};
     ships[34] = (ship){9.88f, 1.66f, 0.48f, 0.48f, 0.03f};
@@ -562,12 +562,34 @@ void resetGame(uint mode)
     ships[36] = (ship){11.11f, 1.99f, 0.22f, 0.22f, 0.024f};
     ships[37] = (ship){7.77f, 1.99f, 0.22f, 0.44f, 0.023f};
     ships[38] = (ship){10.01f, 2.66f, 0.34f, 0.44f, 0.026f};
-    ships[39] = (ship){12.68f, 1.11f, 0.136f, 0.4f, 0.02f};
+    ships[39] = (ship){12.68f, 1.11f, 0.136f, 0.4f, 0.0036f};
     ships[40] = (ship){12.21f, 2.22f, 0.5f, 0.5f, 0.025f};
     ships[41] = (ship){8.88f, 1.11f, 0.38f, 0.38f, 0.018f};
-    ships[42] = (ship){6.88f, 0.777f, 0.0777f, 0.0777f, 0.00777f};
-
-    //
+    ships[42] = (ship){6.88f, 0.777f, 0.1333f, 0.1333f, 0.00777f};
+    ships[43] = (ship){19.17f, 1.12f, 0.56f, 0.53f, 0.0261620f};
+    ships[44] = (ship){44.44f, 5.18f, 0.73f, 0.9f, 0.018f};
+    ships[45] = (ship){24.42f, 4.18f, 0.9f, 0.9f, 0.0188f};
+    ships[46] = (ship){9.f, 2.3f, 0.5f, 0.5f, 0.025f}; //b
+    ships[47] = (ship){10.10f, 2.3f, 0.38f, 0.38f, 0.022f};
+    ships[48] = (ship){36.63f, 4.44f, 0.38f, 0.38f, 0.0234f};
+    ships[49] = (ship){8.88f, 0.88f, 0.38f, 0.38f, 0.014f};
+    ships[50] = (ship){9.f, 2.3f, 0.5f, 0.5f, 0.025f}; //b
+    ships[51] = (ship){11.11f, 2.3f, 0.38f, 0.38f, 0.023f};
+    ships[52] = (ship){13.31f, 1.6f, 0.63f, 0.36f, 0.018f};
+    ships[53] = (ship){48.84f, 3.33f, 0.66f, 0.66f, 0.03f};
+    ships[54] = (ship){8.88f, 1.11f, 0.66f, 0.66f, 0.03f};
+    ships[55] = (ship){9.f, 2.3f, 0.5f, 0.5f, 0.025f}; //b
+    ships[56] = (ship){16.61f, 2.2f, 0.56f, 0.56f, 0.022f};
+    ships[57] = (ship){12.21f, 2.2f, 0.56f, 0.56f, 0.027f};
+    ships[58] = (ship){3.33f, 0.66f, 0.33f, 0.33f, 0.006f};
+    ships[59] = (ship){3.33f, 0.88f, 0.36f, 0.36f, 0.014f};
+    ships[60] = (ship){33.33f, 4.24f, 0.26f, 0.36f, 0.019f};
+    ships[61] = (ship){11.11f, 3.f, 0.433f, 0.433f, 0.012f};
+    ships[62] = (ship){12.21f, 2.3f, 0.34f, 0.34f, 0.021f};
+    ships[63] = (ship){15.51f, 3.3f, 0.28f, 0.34f, 0.018f};
+    ships[64] = (ship){13.31f, 2.2f, 0.74f, 0.84f, 0.012f};
+    ships[65] = (ship){13.31f, 2.2f, 0.74f, 0.84f, 0.012f};
+    ships[66] = (ship){6.6f, 2.2f, 0.33f, 0.33f, 0.012f};
     ships[67] = (ship){9.f, 2.3f, 0.5f, 0.5f, 0.025f}; //b
 
     dzoom = -0.3f;
