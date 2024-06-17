@@ -46,6 +46,8 @@ typedef struct {float m[4][4];} mat; // Matrix
 // render states
 mat projection, view, model, modelview;
 #define updateModelView(); mMul(&modelview,&model,&view);glUniformMatrix4fv(modelview_id,1,GL_FALSE,(float*)&modelview.m[0][0]);
+#define toView(); glUniformMatrix4fv(modelview_id,1,GL_FALSE,(float*)&view.m[0][0]);
+#define toModelView(); glUniformMatrix4fv(modelview_id,1,GL_FALSE,(float*)&modelview.m[0][0]);
 
 // ESModel ✨
 typedef struct
@@ -688,31 +690,31 @@ void makeAllShaders()
     makeLambert();
 }
 /// <><><> ///
-void shadeFullbrightSolid(GLint* position, GLint* projection, GLint* modelview, GLint* color, GLint* lightness, GLint* opacity)
+void shadeFullbrightSolid(GLint* position, GLint* iprojection, GLint* imodelview, GLint* color, GLint* lightness, GLint* opacity)
 {
     *position = shdFullbrightSolid_position;
-    *projection = shdFullbrightSolid_projection;
-    *modelview = shdFullbrightSolid_modelview;
+    *iprojection = shdFullbrightSolid_projection;
+    *imodelview = shdFullbrightSolid_modelview;
     *color = shdFullbrightSolid_color;
     *opacity = shdFullbrightSolid_opacity;
     *lightness = shdFullbrightSolid_lightness;
     glUseProgram(shdFullbrightSolid);
 }
-void shadeFullbright(GLint* position, GLint* projection, GLint* modelview, GLint* color, GLint* lightness, GLint* opacity)
+void shadeFullbright(GLint* position, GLint* iprojection, GLint* imodelview, GLint* color, GLint* lightness, GLint* opacity)
 {
     *position = shdFullbright_position;
-    *projection = shdFullbright_projection;
-    *modelview = shdFullbright_modelview;
+    *iprojection = shdFullbright_projection;
+    *imodelview = shdFullbright_modelview;
     *color = shdFullbright_color;
     *opacity = shdFullbright_opacity;
     *lightness = shdFullbright_lightness;
     glUseProgram(shdFullbright);
 }
-void shadeLambertSolid(GLint* position, GLint* projection, GLint* modelview, GLint* lightpos, GLint* normal, GLint* color, GLint* ambient, GLint* saturate, GLint* opacity)
+void shadeLambertSolid(GLint* position, GLint* iprojection, GLint* imodelview, GLint* lightpos, GLint* normal, GLint* color, GLint* ambient, GLint* saturate, GLint* opacity)
 {
     *position = shdLambertSolid_position;
-    *projection = shdLambertSolid_projection;
-    *modelview = shdLambertSolid_modelview;
+    *iprojection = shdLambertSolid_projection;
+    *imodelview = shdLambertSolid_modelview;
     *lightpos = shdLambertSolid_lightpos;
     *color = shdLambertSolid_color;
     *normal = shdLambertSolid_normal;
@@ -721,11 +723,11 @@ void shadeLambertSolid(GLint* position, GLint* projection, GLint* modelview, GLi
     *opacity = shdLambertSolid_opacity;
     glUseProgram(shdLambertSolid);
 }
-void shadeLambert(GLint* position, GLint* projection, GLint* modelview, GLint* lightpos, GLint* normal, GLint* color, GLint* ambient, GLint* saturate, GLint* opacity)
+void shadeLambert(GLint* position, GLint* iprojection, GLint* imodelview, GLint* lightpos, GLint* normal, GLint* color, GLint* ambient, GLint* saturate, GLint* opacity)
 {
     *position = shdLambert_position;
-    *projection = shdLambert_projection;
-    *modelview = shdLambert_modelview;
+    *iprojection = shdLambert_projection;
+    *imodelview = shdLambert_modelview;
     *lightpos = shdLambert_lightpos;
     *color = shdLambert_color;
     *normal = shdLambert_normal;

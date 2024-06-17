@@ -640,7 +640,7 @@ void main_loop()
     ///
 
     // render planets/islands
-    glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (float*)&view.m[0][0]);
+    toView();
     for(uint i=0; i<207; i++)
     {
         // ship sphere collision with planet/island?
@@ -692,7 +692,15 @@ void main_loop()
         mRotZ(&model, pr);
         mRotX(&model, -prd*50.f);
     }
-    else
+    else if(free_look == 1)
+    {
+        float prd = -(pr+xrot)*0.025f;
+        if(fabsf(prd) < 0.0006f){free_look=2;}
+        pr += prd;
+        mRotZ(&model, pr);
+        mRotX(&model, -prd*50.f);
+    }
+    else if(free_look == 2)
     {
         mRotZ(&model, pr);
     }
@@ -710,6 +718,7 @@ void main_loop()
 //*************************************
 void key_callback(GLFWwindow* wnd, int key, int scancode, int action, int mods)
 {
+    if(focus_cursor == 0){return;}
     if(action == GLFW_PRESS)
     {
         if(     key == GLFW_KEY_LEFT  || key == GLFW_KEY_A){ks[0]=1;}
@@ -762,6 +771,7 @@ void key_callback(GLFWwindow* wnd, int key, int scancode, int action, int mods)
 }
 void scroll_callback(GLFWwindow* wnd, double xoffset, double yoffset)
 {
+    if(focus_cursor == 0){return;}
     if(ks[6] == 1)
     {
         if(yoffset < 0.0){vis-=3;}else{vis+=3;}
@@ -775,7 +785,11 @@ void scroll_callback(GLFWwindow* wnd, double xoffset, double yoffset)
 }
 void mouse_button_callback(GLFWwindow* wnd, int button, int action, int mods)
 {
-    if(action != GLFW_PRESS){return;}
+    if(action != GLFW_PRESS)
+    {
+        if(focus_cursor == 1 && button == GLFW_MOUSE_BUTTON_RIGHT){free_look=0;}
+        return;
+    }
     if(button == GLFW_MOUSE_BUTTON_LEFT)
     {
         if(focus_cursor == 0)
@@ -786,26 +800,16 @@ void mouse_button_callback(GLFWwindow* wnd, int button, int action, int mods)
             glfwGetCursorPos(wnd, &lx, &ly);
 #endif
         }
-        else
-        {
-            focus_cursor = 0;
-#ifndef WEB
-            glfwSetInputMode(wnd, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-            glfwGetCursorPos(wnd, &lx, &ly);
-#endif
-        }
+//         else
+//         {
+//             focus_cursor = 0;
+// #ifndef WEB
+//             glfwSetInputMode(wnd, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+//             glfwGetCursorPos(wnd, &lx, &ly);
+// #endif
+//         }
     }
-    else if(button == GLFW_MOUSE_BUTTON_RIGHT)
-    {
-        if(free_look == 0)
-        {
-            free_look = 1;
-        }
-        else
-        {
-            free_look = 0;
-        }
-    }
+    else if(button == GLFW_MOUSE_BUTTON_RIGHT){free_look = 1;}
 }
 void window_size_callback(GLFWwindow* wnd, int width, int height)
 {
@@ -879,7 +883,7 @@ int main(int argc, char** argv)
     printf("Scroll = Zoom Camera\n");
     printf("E + Scroll = Scroll Ships\n");
     printf("Mouse = Rotate Camera & Fly Heading\n");
-    printf("Right Click = Toggle free/orbit cam.\n");
+    printf("Right Click = Hold for free cam.\n");
     printf("W,A,S,D / Arrow Keys = Fly Directions\n");
     printf("Space / Shift = Up and Down altitude.\n");
     printf("F = FPS to console.\n");
@@ -1004,7 +1008,6 @@ int main(int argc, char** argv)
     glClearColor(0.f, 0.f, 0.f, 0.f);
 
     shadeLambert(&position_id, &projection_id, &modelview_id, &lightpos_id, &normal_id, &color_id, &ambient_id, &saturate_id, &opacity_id);
-    glUniformMatrix4fv(projection_id, 1, GL_FALSE, (float*)&projection.m[0][0]);
     glUniform1f(ambient_id, 0.26f);
     glUniform1f(saturate_id, 1.0f);
     window_size_callback(wnd, winw, winh);
