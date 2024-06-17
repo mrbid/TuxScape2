@@ -62,7 +62,6 @@ void timestamp(char* ts){const time_t tt=time(0);strftime(ts,16,"%H:%M:%S",local
 #include "inc/gl.h"
 #define GLFW_INCLUDE_NONE
 #include "inc/glfw3.h"
-#define fTime() (float)glfwGetTime()
 #define uint GLuint
 #define sint GLint
 #define MAX_MODELS 411 // hard limit, be aware and increase if needed
@@ -501,11 +500,17 @@ float dzoom = -0.3f;
 float zoom = -1.3f;
 
 // player
+uint sid=67; // ship id
 int vis=207; // render id
 vec pp, pd, pv; // pos, dir, velocity
 float pr = 0.f; // rot
-const float pa = 9.f; // acceleration
-const float pb = 2.3f; // braking factor
+#define pa ships[sid].accel
+#define pb ships[sid].brake
+#define pes ships[sid].elev_speed
+#define pss ships[sid].straf_speed
+typedef struct {float accel, brake, elev_speed, straf_speed, turn_speed;} ship;
+#define MAX_SHIPS 68
+ship ships[MAX_SHIPS];
 
 
 //*************************************
@@ -513,6 +518,18 @@ const float pb = 2.3f; // braking factor
 //*************************************
 void resetGame(uint mode)
 {
+    //for(uint i=0; i < MAX_SHIPS; i++){ships[i] = (ship){9.f, 2.3f, 0.5f, 0.5f, 0.025f};}
+    for(uint i=0; i < MAX_SHIPS; i++){ships[i] = (ship){esRandFloat(4.20f, 24.f), esRandFloat(1.f, 6.f), esRandFloat(0.25f, 1.f), esRandFloat(0.25f, 1.f), esRandFloat(0.0025f, 0.042f)};}
+    ships[0] = (ship){3.f, 2.3f, 0.5f, 0.5f, 0.005f};
+    ships[2] = (ship){11.3f, 1.93f, 0.5f, 0.67f, 0.015f};
+    ships[3] = (ship){11.3f, 1.93f, 0.5f, 0.25f, 0.015f};
+    ships[4] = (ship){13.37f, 4.20f, 0.33f, 0.22f, 0.033f};
+    ships[5] = (ship){16.67f, 2.22f, 0.75f, 0.33f, 0.0276f};
+
+    ships[7] = (ship){8.f, 4.20f, 0.25f, 0.25f, 0.01f};
+
+    ships[11] = (ship){13.37f, 1.337f, 0.5f, 0.25f, 0.016f};
+
     dzoom = -0.3f;
     zoom = -1.3f;
     pd = (vec){0.f, 1.f, 0.f};
@@ -524,6 +541,7 @@ void resetGame(uint mode)
     yrot =  1.431000f;
 
     vis=408;
+    sid=67;
 
     if(mode == 1)
     {
@@ -544,7 +562,7 @@ void main_loop()
 //*************************************
     fc++;
     glfwPollEvents();
-    t = fTime();
+    t = (float)glfwGetTime();
     dt = t-lt;
     lt = t;
 
@@ -578,22 +596,22 @@ void main_loop()
     ///
     if(ks[0] == 1) // A
     {
-        pv.x += sinf(pr-d2PI)*pa*0.5f*dt;
-        pv.y += cosf(pr-d2PI)*pa*0.5f*dt;
+        pv.x += sinf(pr-d2PI)*pa*pss*dt;
+        pv.y += cosf(pr-d2PI)*pa*pss*dt;
     }
     else if(ks[1] == 1) // D
     {
-        pv.x -= sinf(pr-d2PI)*pa*0.5f*dt;
-        pv.y -= cosf(pr-d2PI)*pa*0.5f*dt;
+        pv.x -= sinf(pr-d2PI)*pa*pss*dt;
+        pv.y -= cosf(pr-d2PI)*pa*pss*dt;
     }
     ///
     if(ks[4] == 1) // SPACE
     {
-        pv.z += pa*0.5f*dt;
+        pv.z += pa*pes*dt;
     }
     else if(ks[5] == 1) // SHIFT
     {
-        pv.z -= pa*0.5f*dt;
+        pv.z -= pa*pes*dt;
     }
 
     // ship braking
@@ -685,7 +703,7 @@ void main_loop()
     mSetPos(&model, pp);
     if(free_look == 0) // ship rotation
     {
-        float prd = -(pr+xrot)*0.025f;
+        float prd = -(pr+xrot)*ships[sid].turn_speed;
         // if(prd > 0.016f)      {prd =  0.016f;}
         // else if(prd < -0.016f){prd = -0.016f;}
         pr += prd;
@@ -694,7 +712,7 @@ void main_loop()
     }
     else if(free_look == 1)
     {
-        float prd = -(pr+xrot)*0.025f;
+        float prd = -(pr+xrot)*ships[sid].turn_speed;
         if(fabsf(prd) < 0.0006f){free_look=2;}
         pr += prd;
         mRotZ(&model, pr);
@@ -774,8 +792,14 @@ void scroll_callback(GLFWwindow* wnd, double xoffset, double yoffset)
     if(focus_cursor == 0){return;}
     if(ks[6] == 1)
     {
-        if(yoffset < 0.0){vis-=3;}else{vis+=3;}
-        if(vis < 207){vis=408;}else if(vis > 408){vis=207;}
+        if(yoffset < 0.0){vis-=3;sid--;}else{vis+=3;sid++;}
+        if(vis < 207){vis=408;sid=67;}else if(vis > 408){vis=207;sid=0;}
+        printf("[S-%u] %g %g %g %g %g\n", sid,
+            ships[sid].accel,
+            ships[sid].brake,
+            ships[sid].elev_speed,
+            ships[sid].straf_speed,
+            ships[sid].turn_speed);
     }
     else
     {
@@ -800,14 +824,6 @@ void mouse_button_callback(GLFWwindow* wnd, int button, int action, int mods)
             glfwGetCursorPos(wnd, &lx, &ly);
 #endif
         }
-//         else
-//         {
-//             focus_cursor = 0;
-// #ifndef WEB
-//             glfwSetInputMode(wnd, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-//             glfwGetCursorPos(wnd, &lx, &ly);
-// #endif
-//         }
     }
     else if(button == GLFW_MOUSE_BUTTON_RIGHT){free_look = 1;}
 }
@@ -1023,8 +1039,7 @@ int main(int argc, char** argv)
     // init
     srand(time(0));
     srandf(time(0));
-    t = fTime();
-    lt = t, lfct = t;
+    glfwSetTime(0.0);
 
     // game init
     resetGame(0);
