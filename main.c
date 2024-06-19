@@ -767,7 +767,7 @@ void main_loop()
         float prd = -(pr+xrot)*pts;
         // if(prd > 0.016f)      {prd =  0.016f;}
         // else if(prd < -0.016f){prd = -0.016f;}
-        pr += prd;
+        pr += prd*200.f*dt;
         mRotZ(&model, pr);
         mRotX(&model, -prd*50.f);
     }
