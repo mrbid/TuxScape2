@@ -720,10 +720,17 @@ void main_loop()
 
     // render planets/islands
     toView();
+    esBindRender(2); // so you don't get lost in space; tabby cat star will guide you.
     for(uint i=0; i<207; i++)
     {
         // ship sphere collision with planet/island?
-        if(vDistSq(esModelArray[i].pos,  pp) < esModelArray[i].rsq*3.3f)
+        const float ppd = vDistSq(esModelArray[i].pos,  pp);
+        if(ppd > 4444.f){continue;}else if(ppd > 1111.f)
+        {
+            glEnable(GL_BLEND);
+            glUniform1f(opacity_id, 1.f-((ppd-1111.f)/3333.f));
+        }
+        if(ppd < esModelArray[i].rsq*3.3f)
         {
             const uint niter = esModelArray[i].nv*3;
             vec bump = (vec){0.f, 0.f, 0.f}; // force against collision (bump back dir)
@@ -756,7 +763,8 @@ void main_loop()
         }
 
         // render
-        esBindRender(i);
+        if(i != 2){esBindRender(i);} 
+        if(ppd > 1111.f){glDisable(GL_BLEND);}
     }
 
     // render player ship
