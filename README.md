@@ -1,8 +1,8 @@
 ![Screenshot of the TuxScape2 game](https://raw.githubusercontent.com/mrbid/TuxScape2/main/screenshot.png)
 
 - **Play Online:** https://gamejolt.com/games/tuxscape2/903148
-- **Snapcraft:** https://snapcraft.io/tuxscape2
 - **Flathub:** https://flathub.org/apps/com.voxdsp.TuxScape2
+- **Snapcraft:** https://snapcraft.io/tuxscape2
 - **Windows:** https://github.com/mrbid/TuxScape2/releases
 
 ## build
