@@ -600,7 +600,7 @@ void resetGame(uint mode)
         ships[i].pos.y = cosf(angle)*rad;
         ships[i].pos.z = esRandFloat(-8.f, 8.f);
         ships[i].vel = (vec){0.f,0.f,0.f};
-        ships[i].rot = 0.f;
+        ships[i].rot = esRandFloat(-PI, PI);
     }
 
     dzoom = -0.3f;
