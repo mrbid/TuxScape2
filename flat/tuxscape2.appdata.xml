@@ -8,22 +8,28 @@
 	<name>TuxScape2</name>
 	<summary>SpaceTux adventure</summary>
 	<description>
-		<p>Tux fights alien space ships and craft!</p>
+		<p>Explore Space.</p>
 		<ul>
-			<li>Mouse = Rotate Camera, Scroll = Zoom Camera</li>
-			<li>A,D / Arrows = ???</li>
+			<li>Scroll = Zoom Camera.</li>
+			<li>Mouse Move = Rotate Camera &amp; Ship Direction.</li>
+			<li>W,A,S,D / Arrow Keys = Fly/Move Directions.</li>
+			<li>Right Click = Hold for free look camera.</li>
+			<li>Space / Shift = Up and Down altitude.</li>
+			<li>E = Steal Nearby Ship.</li>
+			<li>C = Change FOV.</li>
+			<li>R = Reset game.</li>
+			<li>F = FPS to console.</li>
 		</ul>
-		<p>Dummy text.</p>
 	</description>
 	<screenshots>
 		<screenshot type="default">
-			<image>https://screenshot.png</image>
-			<caption>Description</caption>
+			<image>https://raw.githubusercontent.com/mrbid/TuxScape2/main/screenshot.png</image>
+			<caption>Tux in the Cativerse!</caption>
 		</screenshot>
 	</screenshots>
 	<url type="homepage">https://github.com/mrbid/tuxscape2</url>
 	<releases>
-		<release version="1.0" date="2024-06-03" />
+		<release version="1.0" date="2024-06-20" />
 	</releases>
 	<content_rating type="oars-1.0" />
 </component>

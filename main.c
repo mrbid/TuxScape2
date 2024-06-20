@@ -651,6 +651,9 @@ void resetGame(uint mode)
 
     if(mode == 1)
     {
+        fov = 30.f;
+        window_size_callback(wnd, winw, winh);
+
         char strts[16];
         timestamp(&strts[0]);
         printf("[%s] Game Reset.\n", strts);
@@ -1189,13 +1192,13 @@ int main(int argc, char** argv)
     printf("----\n");
 #endif
     // printf("Q = Push to Talk\n");
-    printf("Scroll = Zoom Camera\n");
-    printf("Mouse Move = Rotate Camera & Ship Direction\n");
-    printf("W,A,S,D / Arrow Keys = Fly Directions\n");
+    printf("Scroll = Zoom Camera.\n");
+    printf("Mouse Move = Rotate Camera & Ship Direction.\n");
+    printf("W,A,S,D / Arrow Keys = Fly/Move Directions.\n");
     //printf("Left Click = Shoot\n");
     printf("Right Click = Hold for free look camera.\n");
     printf("Space / Shift = Up and Down altitude.\n");
-    printf("E = Steal Nearby Ship\n");
+    printf("E = Steal Nearby Ship.\n");
     printf("C = Change FOV.\n");
     printf("R = Reset game.\n");
     printf("F = FPS to console.\n");
