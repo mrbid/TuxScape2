@@ -2,7 +2,7 @@
 
 - **Snapcraft:** https://snapcraft.io/tuxscape2
 - **Flathub:** https://flathub.org/apps/com.voxdsp.TuxScape2
-- **Play Online:**: https://gamejolt.com/games/tuxscape2/903148
+- **Play Online:** https://gamejolt.com/games/tuxscape2/903148
 - **Windows:**: https://github.com/mrbid/TuxScape2/releases
 
 ## build
