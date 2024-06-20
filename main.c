@@ -1,8 +1,6 @@
 /*
     James William Fletcher ( github.com/mrbid )
         June 2024
-
-    ? view distance culling for low end devices?
 */
 
 //#pragma GCC diagnostic ignored "-Wunused-result"
@@ -66,7 +64,7 @@ void timestamp(char* ts){const time_t tt=time(0);strftime(ts,16,"%H:%M:%S",local
 #include "inc/glfw3.h"
 #define uint GLuint
 #define sint GLint
-#define MAX_MODELS 411 // hard limit, be aware and increase if needed
+#define MAX_MODELS 432 // hard limit, be aware and increase if needed
 #include "inc/esLuma.h"
 #include "assets/high/p0.h"  //0
 #include "assets/high/p1.h"  //1
@@ -481,6 +479,28 @@ void timestamp(char* ts){const time_t tt=time(0);strftime(ts,16,"%H:%M:%S",local
 #include "assets/high/m67.h"  //409
 #include "assets/high/l67.h"  //410
 
+#include "assets/high/f0.h"   //411
+#include "assets/high/f1.h"   //412
+#include "assets/high/f2.h"   //413
+#include "assets/high/f3.h"   //414
+#include "assets/high/f4.h"   //415
+#include "assets/high/f5.h"   //416
+#include "assets/high/f6.h"   //417
+#include "assets/high/f7.h"   //418
+#include "assets/high/f8.h"   //419
+#include "assets/high/f9.h"   //420
+#include "assets/high/f10.h"  //421
+#include "assets/high/f11.h"  //422
+#include "assets/high/f12.h"  //423
+#include "assets/high/f13.h"  //424
+#include "assets/high/f14.h"  //425
+#include "assets/high/f15.h"  //426
+#include "assets/high/f16.h"  //427
+#include "assets/high/f17.h"  //428
+#include "assets/high/f18.h"  //429
+#include "assets/high/f19.h"  //430
+#include "assets/high/emoji.h"//431
+
 
 //*************************************
 // globals
@@ -488,7 +508,11 @@ void timestamp(char* ts){const time_t tt=time(0);strftime(ts,16,"%H:%M:%S",local
 const char appTitle[]="TuxScape 2";
 GLFWwindow* wnd;
 uint winw=1024, winh=768, ks[6]={0};
+<<<<<<< HEAD
 float t=0.f, dt=0.f, lt=0.f, fc=0.f, lfct=0.f, aspect;
+=======
+float t=0.f, dt=0.f, lt=0.f, fc=0.f, lfct=0.f, fov=30.f, aspect;
+>>>>>>> 30c2dae (r1)
 
 // camera vars
 #define FAR_DISTANCE 777.f
@@ -504,6 +528,7 @@ float zoom = -1.3f;
 // player
 uint sid=67; // ship id
 int vis=207; // ship render id [207-408]
+<<<<<<< HEAD
 #define pp ships[sid].pos // ship position
 #define pv ships[sid].vel // ship velocity
 #define pr ships[sid].rot // ship rot/dir in radians
@@ -512,9 +537,24 @@ int vis=207; // ship render id [207-408]
 #define pes ships[sid].elev_speed
 #define pss ships[sid].straf_speed
 #define pts ships[sid].turn_speed
+=======
+#define pp  ships[sid].pos
+#define pv  ships[sid].vel
+#define pr  ships[sid].rot
+#define pa  ships[sid].accel
+#define pb  ships[sid].brake
+#define pes ships[sid].elev_speed
+#define pss ships[sid].straf_speed
+#define pts ships[sid].turn_speed
+
+// ships
+>>>>>>> 30c2dae (r1)
 typedef struct {float accel,brake,elev_speed,straf_speed,turn_speed,rot;vec pos,vel;} ship;
 #define MAX_SHIPS 68
 ship ships[MAX_SHIPS];
+
+// emojis
+vec emoji[20];
 
 
 //*************************************
@@ -522,6 +562,18 @@ ship ships[MAX_SHIPS];
 //*************************************
 void resetGame(uint mode)
 {
+    sid=67;
+    vis=207+(sid*3);
+
+    for(uint i=0; i < 20; i++)
+    {
+        const float rad=esRandFloat(20.f, 120.f), angle=esRandFloat(-PI, PI);
+        emoji[i].x = sinf(angle)*rad;
+        emoji[i].y = cosf(angle)*rad;
+        emoji[i].z = esRandFloat(-8.f, 8.f);
+        emoji[i].w = esRandFloat(-PI, PI); // Zrot in w
+    }
+    
     //for(uint i=0; i < MAX_SHIPS; i++){ships[i] = (ship){9.f, 2.3f, 0.5f, 0.5f, 0.025f};}
     //for(uint i=0; i < MAX_SHIPS; i++){ships[i] = (ship){esRandFloat(4.20f, 24.f), esRandFloat(1.f, 6.f), esRandFloat(0.25f, 1.f), esRandFloat(0.25f, 1.f), esRandFloat(0.0025f, 0.042f)};}
     ships[0]  = (ship){3.f, 2.3f, 0.5f, 0.5f, 0.005f};
@@ -588,12 +640,21 @@ void resetGame(uint mode)
     ships[61] = (ship){11.11f, 3.f, 0.433f, 0.433f, 0.012f};
     ships[62] = (ship){12.21f, 2.3f, 0.34f, 0.34f, 0.021f};
     ships[63] = (ship){15.51f, 3.3f, 0.28f, 0.34f, 0.018f};
+<<<<<<< HEAD
     ships[64] = (ship){13.31f, 2.2f, 0.74f, 0.84f, 0.012f};//
     ships[65] = (ship){13.31f, 2.2f, 0.74f, 0.84f, 0.012f};//
+=======
+    ships[64] = (ship){13.31f, 2.2f, 0.74f, 0.84f, 0.012f};//c
+    ships[65] = (ship){13.31f, 2.2f, 0.74f, 0.84f, 0.012f};//c
+>>>>>>> 30c2dae (r1)
     ships[66] = (ship){6.6f, 2.2f, 0.33f, 0.33f, 0.012f};
     ships[67] = (ship){9.f, 2.3f, 0.5f, 0.5f, 0.025f}; //b
     for(uint i=0; i < MAX_SHIPS; i++)
     {
+<<<<<<< HEAD
+=======
+        if(i == sid){continue;}
+>>>>>>> 30c2dae (r1)
         const float rad = esRandFloat(20.f, 120.f);
         const float angle = esRandFloat(-PI, PI);
         ships[i].pos.x = sinf(angle)*rad;
@@ -605,15 +666,17 @@ void resetGame(uint mode)
 
     dzoom = -0.3f;
     zoom = -1.3f;
-    pv = (vec){0.f, 0.f, 0.f};
-
-    pp = (vec){-12.738008f, -13.827285f, 2.864779f};
-    pr = 7.019940f;
     xrot = -7.019932f;
     yrot =  1.431000f;
+<<<<<<< HEAD
 
     sid=67;
     vis=207+(sid*3);
+=======
+    pp = (vec){-12.738008f, -13.827285f, 2.864779f};
+    pv = (vec){0.f, 0.f, 0.f};
+    pr = 7.019940f;
+>>>>>>> 30c2dae (r1)
 
     if(mode == 1)
     {
@@ -739,7 +802,11 @@ void main_loop()
         if(ppd > 4444.f){continue;}else if(ppd > 1111.f)
         {
             glEnable(GL_BLEND);
+<<<<<<< HEAD
             glUniform1f(opacity_id, 1.f-((ppd-1111.f)/3333.f));
+=======
+            glUniform1f(opacity_id, 1.f-((ppd-1111.f)*0.00030003f));
+>>>>>>> 30c2dae (r1)
         }
         if(ppd < esModelArray[i].rsq*3.3f)
         {
@@ -778,6 +845,7 @@ void main_loop()
         // render
         if(i != 2){esBindRender(i);} 
         if(ppd > 1111.f){glDisable(GL_BLEND);}
+<<<<<<< HEAD
     }
 
     // render player ships
@@ -850,6 +918,198 @@ void main_loop()
         esBindRender(207+(i*3)+lod);
         if(spd > 1111.f){glDisable(GL_BLEND);}
     }
+=======
+    }
+    
+    // render emojis
+    esBindModel(431);
+    for(uint i=0; i < 20; i++)
+    {
+        if(emoji[i].w <= -444.f){continue;}
+        
+        mIdent(&model);
+        mSetPos(&model, emoji[i]);
+
+        const float pfd = vDistSq(emoji[i],  pp);
+        if(pfd > 1111.f){continue;}else if(pfd > 0.f)
+        {
+            glEnable(GL_BLEND);
+            glUniform1f(opacity_id, 1.f-(pfd*0.00090009f));
+        }
+
+        if(emoji[i].w == -333.f)
+        {
+            const vec fpos = esModelArray[411+i].pos;
+            vec t;
+            vSub(&t, fpos, emoji[i]);
+            vNorm(&t);
+            mSetDir(&model, t);
+            vMulS(&t, t, dt*3.f);
+            vAdd(&emoji[i], emoji[i], t);
+            const float d = vDistSq(emoji[i], fpos);
+            if(d < 0.001f){emoji[i].w = -444.f;if(pfd > 0.f){glDisable(GL_BLEND);}continue;}
+            else if(d < 222.f){mScale1(&model, d*0.004504505f);}
+        }
+        else
+        {
+            const float d = vDistSq(pp, emoji[i]);
+            if(d <= 0.3f)
+            {
+                emoji[i].w = -333.f;
+            }
+            else if(d <= 24.f)
+            {
+                mRotZ(&model, emoji[i].w+d);
+                mRotY(&model, (emoji[i].w*0.5f)+(d*0.5f));
+                mRotX(&model, (emoji[i].w*0.25f)+(d*0.75f));
+            }
+            else
+            {
+                mRotZ(&model, emoji[i].w);
+                mRotY(&model, emoji[i].w*0.5f);
+                mRotX(&model, emoji[i].w*0.25f);
+            }
+        }
+
+        updateModelView();
+        esRenderModel();
+        if(pfd > 0.f){glDisable(GL_BLEND);}
+    }
+
+    // render friends
+    for(uint i=0; i<20; i++)
+    {
+        if(emoji[i].w <= -444.f)
+        {
+            // ship collision with friend
+            const float ppd = vDistSq(esModelArray[411+i].pos,  pp);
+            if(ppd > 4444.f){continue;}else if(ppd > 1111.f)
+            {
+                glEnable(GL_BLEND);
+                glUniform1f(opacity_id, 1.f-((ppd-1111.f)*0.00030003f));
+            }
+            if(ppd < esModelArray[411+i].rsq*3.3f)
+            {
+                const uint niter = esModelArray[411+i].nv*3;
+                vec bump = (vec){0.f, 0.f, 0.f}; // force against collision (bump back dir)
+                float bump_acc = 0.f; // total to divide bump by at end
+                for(uint j = 0; j < niter; j+=3) // check if the ship hit any vertices and correct course
+                {
+                    const float vx = esModelArray[411+i].vertices[j],
+                                vy = esModelArray[411+i].vertices[j+1],
+                                vz = esModelArray[411+i].vertices[j+2];
+                    if(vDistSq((vec){vx, vy, vz}, pp) < esModelArray[vis].rsq)
+                    {
+                        bump.x += esModelArray[411+i].normals[j];
+                        bump.y += esModelArray[411+i].normals[j+1];
+                        bump.z += esModelArray[411+i].normals[j+2];
+                        bump_acc+=1.f;
+                        // could improve by checking if the normal is
+                        // within 180 degree facing the ship before summation.
+                    }
+                }
+                if(bump_acc > 0.f)
+                {
+                    bump.x /= bump_acc;
+                    bump.y /= bump_acc;
+                    bump.z /= bump_acc;
+                    // pp.x += bump.x*0.16f*dt;
+                    // pp.y += bump.y*0.16f*dt;
+                    // pp.z += bump.z*0.16f*dt;
+                    pv = (vec){ bump.x*pa*dt,
+                                bump.y*pa*dt,
+                                bump.z*pa*dt };
+                }
+            }
+
+            // fade in / render
+            const float d = -(emoji[i].w+444.f);
+            if(d < 1.f)
+            {
+                glEnable(GL_BLEND);
+                glUniform1f(opacity_id, d);
+            }
+            toView();
+            esBindRender(411+i);
+            if(d < 1.f)
+            {
+                glDisable(GL_BLEND);
+                emoji[i].w -= 0.42f*dt;
+            }
+        }
+    }
+    
+    // render player ships
+    float prd = 0.f;
+    if(free_look < 2) // ship rotation
+    {
+        prd = -(pr+xrot)*pts;
+        if(free_look == 1 && fabsf(prd) < 0.0006f){free_look=2;}
+        pr += prd*200.f*dt;
+    }
+    for(uint i=0; i < MAX_SHIPS; i++)
+    {
+        // colliding with the player controlled ship?
+        if(i != sid)
+        {
+            const float dj = vDistSq(ships[i].pos, pp);
+            if(dj <= (esModelArray[207+i].rsq+esModelArray[vis].rsq)*2.f)
+            {
+                pv = (vec){pp.x-ships[i].pos.x, pp.y-ships[i].pos.y, pp.z-ships[i].pos.z};
+                vNorm(&pv);
+                pv = (vec){pv.x*pa*dt, pv.y*pa*dt, pv.z*pa*dt};
+            }
+        }
+
+        // colliding with another ship?
+        // for(uint j=0; j < MAX_SHIPS; j++)
+        // {
+        //     if(j==i){continue;}
+        //     const float dj = vDistSq(ships[j].pos, ships[i].pos);
+        //     if(dj <= (esModelArray[207+i].rsq+esModelArray[207+j].rsq)*2.f)
+        //     {
+        //         //pv = (vec){0.f, 0.f, 0.f};
+        //         ships[i].vel = (vec){ships[i].pos.x-ships[j].pos.x,
+        //                              ships[i].pos.y-ships[j].pos.y,
+        //                              ships[i].pos.z-ships[j].pos.z};
+        //         vNorm(&ships[i].vel);
+        //         ships[i].vel = (vec){ships[i].vel.x*pa*dt, ships[i].vel.y*pa*dt, ships[i].vel.z*pa*dt};
+        //     }
+        // }
+
+        // rotations
+        mIdent(&model);
+        mSetPos(&model, ships[i].pos);
+        if(free_look == 0) // ship rotation
+        {
+            mRotZ(&model, ships[i].rot);
+            if(i==sid){mRotX(&model, -prd*50.f);}
+        }
+        else if(i==sid && free_look == 1)
+        {
+            mRotZ(&model, ships[i].rot);
+            mRotX(&model, -prd*50.f);
+        }
+        else
+        {
+            mRotZ(&model, ships[i].rot);
+        }
+        updateModelView();
+
+        // distance lod, alpha blend distance fade, and render
+        const float spd = vDistSq(ships[i].pos, pp);
+        if(spd > 4444.f){continue;}else if(spd > 1111.f)
+        {
+            glEnable(GL_BLEND);
+            glUniform1f(opacity_id, 1.f-((spd-1111.f)*0.00030003f));
+        }
+        uint lod = 0;
+        if(spd > 333.f){lod=2;}
+        else if(spd > 60.f){lod=1;}
+        esBindRender(207+(i*3)+lod);
+        if(spd > 1111.f){glDisable(GL_BLEND);}
+    }
+>>>>>>> 30c2dae (r1)
 
     ///
 
@@ -907,6 +1167,11 @@ void key_callback(GLFWwindow* wnd, int key, int scancode, int action, int mods)
         else if(key == GLFW_KEY_R) // reset game
         {
             resetGame(1);
+        }
+        else if(key == GLFW_KEY_C)
+        {
+            if(fov==60.f){fov=30.f;}else{fov=60.f;}
+            window_size_callback(wnd, winw, winh);
         }
         else if(key == GLFW_KEY_ESCAPE)
         {
@@ -970,7 +1235,7 @@ void window_size_callback(GLFWwindow* wnd, int width, int height)
     glViewport(0, 0, winw, winh);
     aspect = (float)winw / (float)winh;
     mIdent(&projection);
-    mPerspective(&projection, 30.0f, aspect, 0.01f, FAR_DISTANCE);
+    mPerspective(&projection, fov, aspect, 0.01f, FAR_DISTANCE);  // 30 and 60 are good here
     glUniformMatrix4fv(projection_id, 1, GL_FALSE, (float*)&projection.m[0][0]);
 }
 #ifdef WEB
@@ -1039,8 +1304,13 @@ int main(int argc, char** argv)
     printf("Right Click = Hold for free look camera.\n");
     printf("Space / Shift = Up and Down altitude.\n");
     printf("E = Steal Nearby Ship\n");
+<<<<<<< HEAD
     printf("F = FPS to console.\n");
+=======
+    printf("C = Change FOV.\n");
+>>>>>>> 30c2dae (r1)
     printf("R = Reset game.\n");
+    printf("F = FPS to console.\n");
     printf("----\n");
     printf("All assets generated using LUMA GENIE (https://lumalabs.ai/genie).\n");
     printf("----\n");
@@ -1147,6 +1417,10 @@ int main(int argc, char** argv)
     register_m65();register_l65();register_h66();register_m66();register_l66();register_h67();register_m67();
     register_l67();
 
+    // friends 0-19 +Emoji (21)
+    register_f0();register_f1();register_f2();register_f3();register_f4();register_f5();register_f6();
+    register_f7();register_f8();register_f9();register_f10();register_f11();register_f12();register_f13();
+    register_f14();register_f15();register_f16();register_f17();register_f18();register_f19();register_emoji();
     
 //*************************************
 // configure render options
