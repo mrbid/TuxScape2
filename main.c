@@ -652,7 +652,9 @@ void resetGame(uint mode)
     if(mode == 1)
     {
         fov = 30.f;
-        window_size_callback(wnd, winw, winh);
+        mIdent(&projection);
+        mPerspective(&projection, fov, aspect, 0.01f, FAR_DISTANCE);
+        glUniformMatrix4fv(projection_id, 1, GL_FALSE, (float*)&projection.m[0][0]);
 
         char strts[16];
         timestamp(&strts[0]);
@@ -1066,7 +1068,9 @@ void key_callback(GLFWwindow* wnd, int key, int scancode, int action, int mods)
         else if(key == GLFW_KEY_C)
         {
             if(fov==60.f){fov=30.f;}else{fov=60.f;}
-            window_size_callback(wnd, winw, winh);
+            mIdent(&projection);
+            mPerspective(&projection, fov, aspect, 0.01f, FAR_DISTANCE);
+            glUniformMatrix4fv(projection_id, 1, GL_FALSE, (float*)&projection.m[0][0]);
         }
         else if(key == GLFW_KEY_ESCAPE)
         {
