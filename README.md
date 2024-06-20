@@ -5,8 +5,6 @@
 - **Play Online:**: https://gamejolt.com/games/tuxscape2/903148
 - **Windows:**: https://github.com/mrbid/TuxScape2/releases
 
-
-
 ## build
 ```
 sudo apt install --assume-yes libglfw3-dev libglfw3
