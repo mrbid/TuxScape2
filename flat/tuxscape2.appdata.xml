@@ -8,7 +8,7 @@
 	<name>TuxScape2</name>
 	<summary>SpaceTux adventure</summary>
 	<description>
-		<p>Explore Space.</p>
+		<p>Explore Space</p>
 		<ul>
 			<li>Scroll = Zoom Camera.</li>
 			<li>Mouse Move = Rotate Camera &amp; Ship Direction.</li>
