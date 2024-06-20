@@ -508,11 +508,7 @@ void timestamp(char* ts){const time_t tt=time(0);strftime(ts,16,"%H:%M:%S",local
 const char appTitle[]="TuxScape 2";
 GLFWwindow* wnd;
 uint winw=1024, winh=768, ks[6]={0};
-<<<<<<< HEAD
-float t=0.f, dt=0.f, lt=0.f, fc=0.f, lfct=0.f, aspect;
-=======
 float t=0.f, dt=0.f, lt=0.f, fc=0.f, lfct=0.f, fov=30.f, aspect;
->>>>>>> 30c2dae (r1)
 
 // camera vars
 #define FAR_DISTANCE 777.f
@@ -528,16 +524,6 @@ float zoom = -1.3f;
 // player
 uint sid=67; // ship id
 int vis=207; // ship render id [207-408]
-<<<<<<< HEAD
-#define pp ships[sid].pos // ship position
-#define pv ships[sid].vel // ship velocity
-#define pr ships[sid].rot // ship rot/dir in radians
-#define pa ships[sid].accel
-#define pb ships[sid].brake
-#define pes ships[sid].elev_speed
-#define pss ships[sid].straf_speed
-#define pts ships[sid].turn_speed
-=======
 #define pp  ships[sid].pos
 #define pv  ships[sid].vel
 #define pr  ships[sid].rot
@@ -548,7 +534,6 @@ int vis=207; // ship render id [207-408]
 #define pts ships[sid].turn_speed
 
 // ships
->>>>>>> 30c2dae (r1)
 typedef struct {float accel,brake,elev_speed,straf_speed,turn_speed,rot;vec pos,vel;} ship;
 #define MAX_SHIPS 68
 ship ships[MAX_SHIPS];
@@ -640,21 +625,13 @@ void resetGame(uint mode)
     ships[61] = (ship){11.11f, 3.f, 0.433f, 0.433f, 0.012f};
     ships[62] = (ship){12.21f, 2.3f, 0.34f, 0.34f, 0.021f};
     ships[63] = (ship){15.51f, 3.3f, 0.28f, 0.34f, 0.018f};
-<<<<<<< HEAD
-    ships[64] = (ship){13.31f, 2.2f, 0.74f, 0.84f, 0.012f};//
-    ships[65] = (ship){13.31f, 2.2f, 0.74f, 0.84f, 0.012f};//
-=======
     ships[64] = (ship){13.31f, 2.2f, 0.74f, 0.84f, 0.012f};//c
     ships[65] = (ship){13.31f, 2.2f, 0.74f, 0.84f, 0.012f};//c
->>>>>>> 30c2dae (r1)
     ships[66] = (ship){6.6f, 2.2f, 0.33f, 0.33f, 0.012f};
     ships[67] = (ship){9.f, 2.3f, 0.5f, 0.5f, 0.025f}; //b
     for(uint i=0; i < MAX_SHIPS; i++)
     {
-<<<<<<< HEAD
-=======
         if(i == sid){continue;}
->>>>>>> 30c2dae (r1)
         const float rad = esRandFloat(20.f, 120.f);
         const float angle = esRandFloat(-PI, PI);
         ships[i].pos.x = sinf(angle)*rad;
@@ -668,15 +645,9 @@ void resetGame(uint mode)
     zoom = -1.3f;
     xrot = -7.019932f;
     yrot =  1.431000f;
-<<<<<<< HEAD
-
-    sid=67;
-    vis=207+(sid*3);
-=======
     pp = (vec){-12.738008f, -13.827285f, 2.864779f};
     pv = (vec){0.f, 0.f, 0.f};
     pr = 7.019940f;
->>>>>>> 30c2dae (r1)
 
     if(mode == 1)
     {
@@ -802,11 +773,7 @@ void main_loop()
         if(ppd > 4444.f){continue;}else if(ppd > 1111.f)
         {
             glEnable(GL_BLEND);
-<<<<<<< HEAD
-            glUniform1f(opacity_id, 1.f-((ppd-1111.f)/3333.f));
-=======
             glUniform1f(opacity_id, 1.f-((ppd-1111.f)*0.00030003f));
->>>>>>> 30c2dae (r1)
         }
         if(ppd < esModelArray[i].rsq*3.3f)
         {
@@ -845,80 +812,6 @@ void main_loop()
         // render
         if(i != 2){esBindRender(i);} 
         if(ppd > 1111.f){glDisable(GL_BLEND);}
-<<<<<<< HEAD
-    }
-
-    // render player ships
-    float prd = 0.f;
-    if(free_look < 2) // ship rotation
-    {
-        prd = -(pr+xrot)*pts;
-        if(free_look == 1 && fabsf(prd) < 0.0006f){free_look=2;}
-        pr += prd*200.f*dt;
-    }
-    for(uint i=0; i < MAX_SHIPS; i++)
-    {
-        // colliding with the player controlled ship?
-        if(i != sid)
-        {
-            const float dj = vDistSq(ships[i].pos, pp);
-            if(dj <= (esModelArray[207+i].rsq+esModelArray[207+sid].rsq)*2.f)
-            {
-                pv = (vec){pp.x-ships[i].pos.x, pp.y-ships[i].pos.y, pp.z-ships[i].pos.z};
-                vNorm(&pv);
-                pv = (vec){pv.x*pa*dt, pv.y*pa*dt, pv.z*pa*dt};
-            }
-        }
-
-        // colliding with another ship?
-        // for(uint j=0; j < MAX_SHIPS; j++)
-        // {
-        //     if(j==i){continue;}
-        //     const float dj = vDistSq(ships[j].pos, ships[i].pos);
-        //     if(dj <= (esModelArray[207+i].rsq+esModelArray[207+j].rsq)*2.f)
-        //     {
-        //         //pv = (vec){0.f, 0.f, 0.f};
-        //         ships[i].vel = (vec){ships[i].pos.x-ships[j].pos.x,
-        //                              ships[i].pos.y-ships[j].pos.y,
-        //                              ships[i].pos.z-ships[j].pos.z};
-        //         vNorm(&ships[i].vel);
-        //         ships[i].vel = (vec){ships[i].vel.x*pa*dt, ships[i].vel.y*pa*dt, ships[i].vel.z*pa*dt};
-        //     }
-        // }
-
-        // rotations
-        mIdent(&model);
-        mSetPos(&model, ships[i].pos);
-        if(free_look == 0) // ship rotation
-        {
-            mRotZ(&model, ships[i].rot);
-            if(i==sid){mRotX(&model, -prd*50.f);}
-        }
-        else if(i==sid && free_look == 1)
-        {
-            mRotZ(&model, ships[i].rot);
-            mRotX(&model, -prd*50.f);
-        }
-        else
-        {
-            mRotZ(&model, ships[i].rot);
-        }
-        updateModelView();
-
-        // distance lod, alpha blend distance fade, and render
-        const float spd = vDistSq(ships[i].pos, pp);
-        if(spd > 4444.f){continue;}else if(spd > 1111.f)
-        {
-            glEnable(GL_BLEND);
-            glUniform1f(opacity_id, 1.f-((spd-1111.f)/3333.f));
-        }
-        uint lod = 0;
-        if(spd > 333.f){lod=2;}
-        else if(spd > 60.f){lod=1;}
-        esBindRender(207+(i*3)+lod);
-        if(spd > 1111.f){glDisable(GL_BLEND);}
-    }
-=======
     }
     
     // render emojis
@@ -1109,7 +1002,6 @@ void main_loop()
         esBindRender(207+(i*3)+lod);
         if(spd > 1111.f){glDisable(GL_BLEND);}
     }
->>>>>>> 30c2dae (r1)
 
     ///
 
@@ -1304,11 +1196,7 @@ int main(int argc, char** argv)
     printf("Right Click = Hold for free look camera.\n");
     printf("Space / Shift = Up and Down altitude.\n");
     printf("E = Steal Nearby Ship\n");
-<<<<<<< HEAD
-    printf("F = FPS to console.\n");
-=======
     printf("C = Change FOV.\n");
->>>>>>> 30c2dae (r1)
     printf("R = Reset game.\n");
     printf("F = FPS to console.\n");
     printf("----\n");
