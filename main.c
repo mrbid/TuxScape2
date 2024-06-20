@@ -790,21 +790,33 @@ void main_loop()
     }
     for(uint i=0; i < MAX_SHIPS; i++)
     {
-        // colliding with another ship?
-        for(uint j=0; j < MAX_SHIPS; j++)
+        // colliding with the player controlled ship?
+        if(i != sid)
         {
-            if(j==i){continue;}
-            const float dj = vDistSq(ships[j].pos, ships[i].pos);
-            if(dj <= (esModelArray[207+i].rsq+esModelArray[207+j].rsq)*2.f)
+            const float dj = vDistSq(ships[i].pos, pp);
+            if(dj <= (esModelArray[207+i].rsq+esModelArray[207+sid].rsq)*2.f)
             {
-                //pv = (vec){0.f, 0.f, 0.f};
-                ships[i].vel = (vec){ships[i].pos.x-ships[j].pos.x,
-                                     ships[i].pos.y-ships[j].pos.y,
-                                     ships[i].pos.z-ships[j].pos.z};
-                vNorm(&ships[i].vel);
-                ships[i].vel = (vec){ships[i].vel.x*pa*dt, ships[i].vel.y*pa*dt, ships[i].vel.z*pa*dt};
+                pv = (vec){pp.x-ships[i].pos.x, pp.y-ships[i].pos.y, pp.z-ships[i].pos.z};
+                vNorm(&pv);
+                pv = (vec){pv.x*pa*dt, pv.y*pa*dt, pv.z*pa*dt};
             }
         }
+
+        // colliding with another ship?
+        // for(uint j=0; j < MAX_SHIPS; j++)
+        // {
+        //     if(j==i){continue;}
+        //     const float dj = vDistSq(ships[j].pos, ships[i].pos);
+        //     if(dj <= (esModelArray[207+i].rsq+esModelArray[207+j].rsq)*2.f)
+        //     {
+        //         //pv = (vec){0.f, 0.f, 0.f};
+        //         ships[i].vel = (vec){ships[i].pos.x-ships[j].pos.x,
+        //                              ships[i].pos.y-ships[j].pos.y,
+        //                              ships[i].pos.z-ships[j].pos.z};
+        //         vNorm(&ships[i].vel);
+        //         ships[i].vel = (vec){ships[i].vel.x*pa*dt, ships[i].vel.y*pa*dt, ships[i].vel.z*pa*dt};
+        //     }
+        // }
 
         // rotations
         mIdent(&model);
@@ -1023,7 +1035,7 @@ int main(int argc, char** argv)
     printf("Scroll = Zoom Camera\n");
     printf("Mouse Move = Rotate Camera & Ship Direction\n");
     printf("W,A,S,D / Arrow Keys = Fly Directions\n");
-    printf("Left Click = Shoot\n");
+    //printf("Left Click = Shoot\n");
     printf("Right Click = Hold for free look camera.\n");
     printf("Space / Shift = Up and Down altitude.\n");
     printf("E = Steal Nearby Ship\n");
