@@ -790,6 +790,23 @@ void main_loop()
     }
     for(uint i=0; i < MAX_SHIPS; i++)
     {
+        // colliding with another ship?
+        for(uint j=0; j < MAX_SHIPS; j++)
+        {
+            if(j==i){continue;}
+            const float dj = vDistSq(ships[j].pos, ships[i].pos);
+            if(dj <= (esModelArray[207+i].rsq+esModelArray[207+j].rsq)*2.f)
+            {
+                //pv = (vec){0.f, 0.f, 0.f};
+                ships[i].vel = (vec){ships[i].pos.x-ships[j].pos.x,
+                                     ships[i].pos.y-ships[j].pos.y,
+                                     ships[i].pos.z-ships[j].pos.z};
+                vNorm(&ships[i].vel);
+                ships[i].vel = (vec){ships[i].vel.x*pa*dt, ships[i].vel.y*pa*dt, ships[i].vel.z*pa*dt};
+            }
+        }
+
+        // rotations
         mIdent(&model);
         mSetPos(&model, ships[i].pos);
         if(free_look == 0) // ship rotation
@@ -807,19 +824,18 @@ void main_loop()
             mRotZ(&model, ships[i].rot);
         }
         updateModelView();
-        const float spd = vDistSq(ships[i].pos, pp);
 
+        // distance lod, alpha blend distance fade, and render
+        const float spd = vDistSq(ships[i].pos, pp);
         if(spd > 4444.f){continue;}else if(spd > 1111.f)
         {
             glEnable(GL_BLEND);
             glUniform1f(opacity_id, 1.f-((spd-1111.f)/3333.f));
         }
-
         uint lod = 0;
         if(spd > 333.f){lod=2;}
         else if(spd > 60.f){lod=1;}
         esBindRender(207+(i*3)+lod);
-
         if(spd > 1111.f){glDisable(GL_BLEND);}
     }
 
@@ -852,7 +868,7 @@ void key_callback(GLFWwindow* wnd, int key, int scancode, int action, int mods)
             {
                 if(i==sid){continue;}
                 const float d = vDistSq(ships[i].pos, pp);
-                if(d < nd) //esModelArray[207+i].rsq+esModelArray[207+sid].rsq
+                if(d < nd)
                 {
                     nid = i;
                     nd = d;
