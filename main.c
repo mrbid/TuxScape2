@@ -780,32 +780,6 @@ void main_loop()
         if(ppd > 1111.f){glDisable(GL_BLEND);}
     }
 
-    // mIdent(&model);
-    // mSetPos(&model, pp);
-    // if(free_look == 0) // ship rotation
-    // {
-    //     float prd = -(pr+xrot)*pts;
-    //     // if(prd > 0.016f)      {prd =  0.016f;}
-    //     // else if(prd < -0.016f){prd = -0.016f;}
-    //     pr += prd*200.f*dt;
-    //     mRotZ(&model, pr);
-    //     mRotX(&model, -prd*50.f);
-    // }
-    // else if(free_look == 1)
-    // {
-    //     float prd = -(pr+xrot)*pts;
-    //     if(fabsf(prd) < 0.0006f){free_look=2;}
-    //     pr += prd;
-    //     mRotZ(&model, pr);
-    //     mRotX(&model, -prd*50.f);
-    // }
-    // else if(free_look == 2)
-    // {
-    //     mRotZ(&model, pr);
-    // }
-    // updateModelView();
-    // esBindRender(vis);
-
     // render player ships
     float prd = 0.f;
     if(free_look < 2) // ship rotation
@@ -833,11 +807,20 @@ void main_loop()
             mRotZ(&model, ships[i].rot);
         }
         updateModelView();
-        const float dist = vDistSq(ships[i].pos, pp);
+        const float spd = vDistSq(ships[i].pos, pp);
+
+        if(spd > 4444.f){continue;}else if(spd > 1111.f)
+        {
+            glEnable(GL_BLEND);
+            glUniform1f(opacity_id, 1.f-((spd-1111.f)/3333.f));
+        }
+
         uint lod = 0;
-        if(dist > 333.f){lod=2;}
-        else if(dist > 60.f){lod=1;}
+        if(spd > 333.f){lod=2;}
+        else if(spd > 60.f){lod=1;}
         esBindRender(207+(i*3)+lod);
+
+        if(spd > 1111.f){glDisable(GL_BLEND);}
     }
 
     ///
@@ -863,7 +846,24 @@ void key_callback(GLFWwindow* wnd, int key, int scancode, int action, int mods)
                 key == GLFW_KEY_RIGHT_SHIFT)               {ks[5]=1;}
         else if(key == GLFW_KEY_E)
         {
-            ks[6]=1;
+            uint nid=sid;
+            float nd=0.16f;
+            for(uint i=0; i < MAX_SHIPS; i++)
+            {
+                if(i==sid){continue;}
+                const float d = vDistSq(ships[i].pos, pp);
+                if(d < nd) //esModelArray[207+i].rsq+esModelArray[207+sid].rsq
+                {
+                    nid = i;
+                    nd = d;
+                }
+            }
+            if(nid != sid)
+            {
+                ships[sid].vel = (vec){0.f,0.f,0.f};
+                sid = nid;
+                xrot = -ships[sid].rot;
+            }
         }
         else if(key == GLFW_KEY_F) // show average fps
         {
@@ -929,26 +929,9 @@ void mouse_button_callback(GLFWwindow* wnd, int button, int action, int mods)
             glfwGetCursorPos(wnd, &lx, &ly);
 #endif
         }
-        else // take control of nearby ship
+        else // shoot
         {
-            uint nid=sid;
-            float nd=0.16f;
-            for(uint i=0; i < MAX_SHIPS; i++)
-            {
-                if(i==sid){continue;}
-                const float d = vDistSq(ships[i].pos, pp);
-                if(d < nd) //esModelArray[207+i].rsq+esModelArray[207+sid].rsq
-                {
-                    nid = i;
-                    nd = d;
-                }
-            }
-            if(nid != sid)
-            {
-                ships[sid].vel = (vec){0.f,0.f,0.f};
-                sid = nid;
-                xrot = -ships[sid].rot;
-            }
+            //
         }
     }
     else if(button == GLFW_MOUSE_BUTTON_RIGHT){free_look = 1;}
@@ -1024,9 +1007,10 @@ int main(int argc, char** argv)
     printf("Scroll = Zoom Camera\n");
     printf("Mouse Move = Rotate Camera & Ship Direction\n");
     printf("W,A,S,D / Arrow Keys = Fly Directions\n");
-    printf("Left Click = Steal Nearby Ship\n");
+    printf("Left Click = Shoot\n");
     printf("Right Click = Hold for free look camera.\n");
     printf("Space / Shift = Up and Down altitude.\n");
+    printf("E = Steal Nearby Ship\n");
     printf("F = FPS to console.\n");
     printf("R = Reset game.\n");
     printf("----\n");
