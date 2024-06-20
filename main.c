@@ -487,7 +487,7 @@ void timestamp(char* ts){const time_t tt=time(0);strftime(ts,16,"%H:%M:%S",local
 //*************************************
 const char appTitle[]="TuxScape 2";
 GLFWwindow* wnd;
-uint winw=1024, winh=768, ks[7]={0};
+uint winw=1024, winh=768, ks[6]={0};
 float t=0.f, dt=0.f, lt=0.f, fc=0.f, lfct=0.f, aspect;
 
 // camera vars
@@ -503,15 +503,16 @@ float zoom = -1.3f;
 
 // player
 uint sid=67; // ship id
-int vis=207; // ship render id
-vec pp, pv; // player: position, velocity
-float pr = 0.f; // ship rot/dir in radians
+int vis=207; // ship render id [207-408]
+#define pp ships[sid].pos // ship position
+#define pv ships[sid].vel // ship velocity
+#define pr ships[sid].rot // ship rot/dir in radians
 #define pa ships[sid].accel
 #define pb ships[sid].brake
 #define pes ships[sid].elev_speed
 #define pss ships[sid].straf_speed
 #define pts ships[sid].turn_speed
-typedef struct {float accel, brake, elev_speed, straf_speed, turn_speed;} ship;
+typedef struct {float accel,brake,elev_speed,straf_speed,turn_speed,rot;vec pos,vel;} ship;
 #define MAX_SHIPS 68
 ship ships[MAX_SHIPS];
 
@@ -587,10 +588,20 @@ void resetGame(uint mode)
     ships[61] = (ship){11.11f, 3.f, 0.433f, 0.433f, 0.012f};
     ships[62] = (ship){12.21f, 2.3f, 0.34f, 0.34f, 0.021f};
     ships[63] = (ship){15.51f, 3.3f, 0.28f, 0.34f, 0.018f};
-    ships[64] = (ship){13.31f, 2.2f, 0.74f, 0.84f, 0.012f};
-    ships[65] = (ship){13.31f, 2.2f, 0.74f, 0.84f, 0.012f};
+    ships[64] = (ship){13.31f, 2.2f, 0.74f, 0.84f, 0.012f};//
+    ships[65] = (ship){13.31f, 2.2f, 0.74f, 0.84f, 0.012f};//
     ships[66] = (ship){6.6f, 2.2f, 0.33f, 0.33f, 0.012f};
     ships[67] = (ship){9.f, 2.3f, 0.5f, 0.5f, 0.025f}; //b
+    for(uint i=0; i < MAX_SHIPS; i++)
+    {
+        const float rad = esRandFloat(20.f, 120.f);
+        const float angle = esRandFloat(-PI, PI);
+        ships[i].pos.x = sinf(angle)*rad;
+        ships[i].pos.y = cosf(angle)*rad;
+        ships[i].pos.z = esRandFloat(-8.f, 8.f);
+        ships[i].vel = (vec){0.f,0.f,0.f};
+        ships[i].rot = 0.f;
+    }
 
     dzoom = -0.3f;
     zoom = -1.3f;
@@ -601,8 +612,8 @@ void resetGame(uint mode)
     xrot = -7.019932f;
     yrot =  1.431000f;
 
-    vis=408;
     sid=67;
+    vis=207+(sid*3);
 
     if(mode == 1)
     {
@@ -746,6 +757,8 @@ void main_loop()
                     bump.y += esModelArray[i].normals[j+1];
                     bump.z += esModelArray[i].normals[j+2];
                     bump_acc+=1.f;
+                    // could improve by checking if the normal is
+                    // within 180 degree facing the ship before summation.
                 }
             }
             if(bump_acc > 0.f)
@@ -767,32 +780,65 @@ void main_loop()
         if(ppd > 1111.f){glDisable(GL_BLEND);}
     }
 
-    // render player ship
-    mIdent(&model);
-    mSetPos(&model, pp);
-    if(free_look == 0) // ship rotation
+    // mIdent(&model);
+    // mSetPos(&model, pp);
+    // if(free_look == 0) // ship rotation
+    // {
+    //     float prd = -(pr+xrot)*pts;
+    //     // if(prd > 0.016f)      {prd =  0.016f;}
+    //     // else if(prd < -0.016f){prd = -0.016f;}
+    //     pr += prd*200.f*dt;
+    //     mRotZ(&model, pr);
+    //     mRotX(&model, -prd*50.f);
+    // }
+    // else if(free_look == 1)
+    // {
+    //     float prd = -(pr+xrot)*pts;
+    //     if(fabsf(prd) < 0.0006f){free_look=2;}
+    //     pr += prd;
+    //     mRotZ(&model, pr);
+    //     mRotX(&model, -prd*50.f);
+    // }
+    // else if(free_look == 2)
+    // {
+    //     mRotZ(&model, pr);
+    // }
+    // updateModelView();
+    // esBindRender(vis);
+
+    // render player ships
+    float prd = 0.f;
+    if(free_look < 2) // ship rotation
     {
-        float prd = -(pr+xrot)*pts;
-        // if(prd > 0.016f)      {prd =  0.016f;}
-        // else if(prd < -0.016f){prd = -0.016f;}
+        prd = -(pr+xrot)*pts;
+        if(free_look == 1 && fabsf(prd) < 0.0006f){free_look=2;}
         pr += prd*200.f*dt;
-        mRotZ(&model, pr);
-        mRotX(&model, -prd*50.f);
     }
-    else if(free_look == 1)
+    for(uint i=0; i < MAX_SHIPS; i++)
     {
-        float prd = -(pr+xrot)*pts;
-        if(fabsf(prd) < 0.0006f){free_look=2;}
-        pr += prd;
-        mRotZ(&model, pr);
-        mRotX(&model, -prd*50.f);
+        mIdent(&model);
+        mSetPos(&model, ships[i].pos);
+        if(free_look == 0) // ship rotation
+        {
+            mRotZ(&model, ships[i].rot);
+            if(i==sid){mRotX(&model, -prd*50.f);}
+        }
+        else if(i==sid && free_look == 1)
+        {
+            mRotZ(&model, ships[i].rot);
+            mRotX(&model, -prd*50.f);
+        }
+        else
+        {
+            mRotZ(&model, ships[i].rot);
+        }
+        updateModelView();
+        const float dist = vDistSq(ships[i].pos, pp);
+        uint lod = 0;
+        if(dist > 333.f){lod=2;}
+        else if(dist > 60.f){lod=1;}
+        esBindRender(207+(i*3)+lod);
     }
-    else if(free_look == 2)
-    {
-        mRotZ(&model, pr);
-    }
-    updateModelView();
-    esBindRender(vis);
 
     ///
 
@@ -815,7 +861,10 @@ void key_callback(GLFWwindow* wnd, int key, int scancode, int action, int mods)
         else if(key == GLFW_KEY_SPACE)                     {ks[4]=1;}
         else if(key == GLFW_KEY_LEFT_SHIFT ||
                 key == GLFW_KEY_RIGHT_SHIFT)               {ks[5]=1;}
-        else if(key == GLFW_KEY_E)                         {ks[6]=1;}
+        else if(key == GLFW_KEY_E)
+        {
+            ks[6]=1;
+        }
         else if(key == GLFW_KEY_F) // show average fps
         {
             if(t-lfct > 2.0)
@@ -849,23 +898,19 @@ void key_callback(GLFWwindow* wnd, int key, int scancode, int action, int mods)
         else if(key == GLFW_KEY_SPACE)                     {ks[4]=0;}
         else if(key == GLFW_KEY_LEFT_SHIFT ||
                 key == GLFW_KEY_RIGHT_SHIFT)               {ks[5]=0;}
-        else if(key == GLFW_KEY_E)                         {ks[6]=0;}
     }
 }
 void scroll_callback(GLFWwindow* wnd, double xoffset, double yoffset)
 {
     if(focus_cursor == 0){return;}
-    if(ks[6] == 1)
-    {
-        if(yoffset < 0.0){vis-=3;sid--;}else{vis+=3;sid++;}
-        if(vis < 207){vis=408;sid=67;}else if(vis > 408){vis=207;sid=0;}
-        printf("[S-%u] %g %g %g %g %g\n",sid,pa,pb,pes,pss,pts);
-    }
-    else
-    {
-        if(yoffset < 0.0){zoom += 0.24f * zoom;}else{zoom -= 0.24f * zoom;}
-        if(zoom > -0.33f){zoom = -0.33f;}else if(zoom < -1.3f){zoom = -1.3f;}
-    }
+
+    // if(yoffset < 0.0){vis-=3;sid--;}else{vis+=3;sid++;}
+    // if(vis < 207){vis=408;sid=67;}else if(vis > 408){vis=207;sid=0;}
+    // xrot = -ships[sid].rot;
+    // //printf("[S-%u] %g %g %g %g %g\n",sid,pa,pb,pes,pss,pts);
+
+    if(yoffset < 0.0){zoom += 0.24f * zoom;}else{zoom -= 0.24f * zoom;}
+    if(zoom > -0.33f){zoom = -0.33f;}else if(zoom < -1.3f){zoom = -1.3f;}
 }
 void mouse_button_callback(GLFWwindow* wnd, int button, int action, int mods)
 {
@@ -883,6 +928,27 @@ void mouse_button_callback(GLFWwindow* wnd, int button, int action, int mods)
             glfwSetInputMode(wnd, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
             glfwGetCursorPos(wnd, &lx, &ly);
 #endif
+        }
+        else // take control of nearby ship
+        {
+            uint nid=sid;
+            float nd=0.16f;
+            for(uint i=0; i < MAX_SHIPS; i++)
+            {
+                if(i==sid){continue;}
+                const float d = vDistSq(ships[i].pos, pp);
+                if(d < nd) //esModelArray[207+i].rsq+esModelArray[207+sid].rsq
+                {
+                    nid = i;
+                    nd = d;
+                }
+            }
+            if(nid != sid)
+            {
+                ships[sid].vel = (vec){0.f,0.f,0.f};
+                sid = nid;
+                xrot = -ships[sid].rot;
+            }
         }
     }
     else if(button == GLFW_MOUSE_BUTTON_RIGHT){free_look = 1;}
@@ -955,12 +1021,11 @@ int main(int argc, char** argv)
     printf("----\n");
 #endif
     // printf("Q = Push to Talk\n");
-    // printf("Mouse 3/4 = Shoot/Boost\n"); // soon
     printf("Scroll = Zoom Camera\n");
-    printf("E + Scroll = Scroll Ships\n");
-    printf("Mouse = Rotate Camera & Fly Heading\n");
-    printf("Right Click = Hold for free cam.\n");
+    printf("Mouse Move = Rotate Camera & Ship Direction\n");
     printf("W,A,S,D / Arrow Keys = Fly Directions\n");
+    printf("Left Click = Steal Nearby Ship\n");
+    printf("Right Click = Hold for free look camera.\n");
     printf("Space / Shift = Up and Down altitude.\n");
     printf("F = FPS to console.\n");
     printf("R = Reset game.\n");
