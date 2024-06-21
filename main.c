@@ -1200,8 +1200,8 @@ int main(int argc, char** argv)
     printf("Arrow Keys or WASD to Move Around.\n");
     printf("Space and Shift to Ascend and Descend in altitude.\n");
     printf("Hold the right mouse button pressed and move around the mouse for the \"free look\" camera.\n");
-    printf("E to Steal the Nearby Ship.\n");
-    printf("C to Change FOV between 30° and 60°.\n");
+    printf("'E' to Steal the Nearby Ship.\n");
+    printf("'C' to Change FOV between 30° and 60°.\n");
     printf("----\n");
     // printf("Q = Push to Talk\n");
     printf("Scroll = Zoom Camera.\n");
