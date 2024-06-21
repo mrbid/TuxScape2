@@ -745,8 +745,16 @@ void main_loop()
         xrot += (float)((lx-mx)*sens);
         yrot += (float)((ly-my)*sens);
 
-        if(yrot > d2PI){yrot = d2PI;}
-        if(yrot < 0.5f){yrot = 0.5f;}
+        if(free_look > 0)
+        {
+            if(yrot > PI){yrot = PI;}
+            if(yrot < 0.f){yrot = 0.f;}
+        }
+        else
+        {
+            if(yrot > d2PI){yrot = d2PI;}
+            if(yrot < 0.5f){yrot = 0.5f;}
+        }
 
         lx = mx, ly = my;
     }
