@@ -850,22 +850,13 @@ void main_loop()
         }
         else
         {
-            const float d = vDistSq(pp, emoji[i]);
-            if(d <= 0.3f)
-            {
-                emoji[i].w = -333.f;
-            }
-            else if(d <= 24.f)
+            const float d = vDistSq(pp, emoji[i])*0.03f;
+            if(d <= 0.3f){emoji[i].w = -333.f;}
+            else
             {
                 mRotZ(&model, emoji[i].w+d);
                 mRotY(&model, (emoji[i].w*0.5f)+(d*0.5f));
                 mRotX(&model, (emoji[i].w*0.25f)+(d*0.75f));
-            }
-            else
-            {
-                mRotZ(&model, emoji[i].w);
-                mRotY(&model, emoji[i].w*0.5f);
-                mRotX(&model, emoji[i].w*0.25f);
             }
         }
 
