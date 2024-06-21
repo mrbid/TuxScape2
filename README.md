@@ -1,6 +1,6 @@
 ![Screenshot of the TuxScape2 game](https://raw.githubusercontent.com/mrbid/TuxScape2/main/screenshot.png)
 
-**Explore Space, collect all 20 emoji's to reveal 20 cool characters and try flying the other 68 space ships that are randomly dotted around.**
+*Explore Space, collect all 20 emoji's to reveal 20 cool characters and try flying the other 68 space ships that are randomly dotted around.*
 
 - **Play Online:** https://gamejolt.com/games/tuxscape2/903148
 - **Flathub:** https://flathub.org/apps/com.voxdsp.TuxScape2
