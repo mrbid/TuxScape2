@@ -8,17 +8,15 @@
 	<name>TuxScape2</name>
 	<summary>SpaceTux adventure</summary>
 	<description>
-		<p>Explore Space</p>
+		<p>Explore Space, collect all 20 emoji's to reveal 20 cool characters and try flying the other 68 space ships that are randomly dotted around.</p>
 		<ul>
-			<li>Scroll = Zoom Camera.</li>
-			<li>Mouse Move = Rotate Camera &amp; Ship Direction.</li>
-			<li>W,A,S,D / Arrow Keys = Fly/Move Directions.</li>
-			<li>Right Click = Hold for free look camera.</li>
-			<li>Space / Shift = Up and Down altitude.</li>
-			<li>E = Steal Nearby Ship.</li>
-			<li>C = Change FOV.</li>
-			<li>R = Reset game.</li>
-			<li>F = FPS to console.</li>
+			<li>Mouse Scroll to Zoom In and Out.</li>
+			<li>Mouse Move to Look Around.</li>
+			<li>Arrow Keys or WASD to Move Around.</li>
+			<li>Space and Shift to Ascend and Descend in altitude.</li>
+			<li>Hold the right mouse button pressed and move around the mouse for the "free look" camera.</li>
+			<li>E to Steal the Nearby Ship.</li>
+			<li>C to Change FOV between 30 and 60.</li>
 		</ul>
 	</description>
 	<screenshots>
