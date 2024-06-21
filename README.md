@@ -8,13 +8,15 @@
 - **Windows:** https://github.com/mrbid/TuxScape2/releases
 
 ## input
-* **Mouse Scroll** to Zoom In and Out.
-* **Mouse Move** to Look Around.
-* **Arrow Keys** or **WASD** to Move Around.
-* **Space** and **Shift** to Ascend and Descend in altitude.
-* **Hold the right mouse button** pressed and move around the mouse for the "free look" camera.
-* **'E'** to Steal the Nearby Ship.
-* **'C'** to Change FOV between 30° and 60°.
+```
+Mouse Scroll to Zoom In and Out.
+Mouse Move to Look Around.
+Arrow Keys or WASD to Move Around.
+Space and Shift to Ascend and Descend in altitude.
+Hold the right mouse button pressed and move around the mouse for the "free look" camera.
+'E' to Steal the Nearby Ship.
+'C' to Change FOV between 30° and 60°.
+```
 
 ## build
 ```
