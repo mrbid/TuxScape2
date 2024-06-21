@@ -1195,6 +1195,14 @@ int main(int argc, char** argv)
     printf("e.g; ./tuxscape2 16\n");
     printf("----\n");
 #endif
+    printf("Mouse Scroll to Zoom In and Out.\n");
+    printf("Mouse Move to Look Around.\n");
+    printf("Arrow Keys or WASD to Move Around.\n");
+    printf("Space and Shift to Ascend and Descend in altitude.\n");
+    printf("Hold the right mouse button pressed and move around the mouse for the \"free look\" camera.\n");
+    printf("E to Steal the Nearby Ship.\n");
+    printf("C to Change FOV between 30° and 60°.\n");
+    printf("----\n");
     // printf("Q = Push to Talk\n");
     printf("Scroll = Zoom Camera.\n");
     printf("Mouse Move = Rotate Camera & Ship Direction.\n");
