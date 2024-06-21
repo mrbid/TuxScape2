@@ -15,8 +15,8 @@
 			<li>Arrow Keys or WASD to Move Around.</li>
 			<li>Space and Shift to Ascend and Descend in altitude.</li>
 			<li>Hold the right mouse button pressed and move around the mouse for the "free look" camera.</li>
-			<li>E to Steal the Nearby Ship.</li>
-			<li>C to Change FOV between 30 and 60.</li>
+			<li>'E' to Steal the Nearby Ship.</li>
+			<li>'C' to Change FOV between 30 and 60.</li>
 		</ul>
 	</description>
 	<screenshots>
