@@ -929,7 +929,7 @@ void main_loop()
             }
             toView();
             esBindRender(411+i);
-            if(d < 1.f)
+            if(d < 1.f || ppd > 1111.f)
             {
                 glDisable(GL_BLEND);
                 emoji[i].w -= 0.42f*dt;
