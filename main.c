@@ -558,8 +558,6 @@ void resetGame(uint mode)
         emoji[i].z = esRandFloat(-8.f, 8.f);
     }
     
-    //for(uint i=0; i < MAX_SHIPS; i++){ships[i] = (ship){9.f, 2.3f, 0.5f, 0.5f, 0.025f};}
-    //for(uint i=0; i < MAX_SHIPS; i++){ships[i] = (ship){esRandFloat(4.20f, 24.f), esRandFloat(1.f, 6.f), esRandFloat(0.25f, 1.f), esRandFloat(0.25f, 1.f), esRandFloat(0.0025f, 0.042f)};}
     ships[0]  = (ship){3.f, 2.3f, 0.5f, 0.5f, 0.005f};
     ships[1]  = (ship){9.f, 2.3f, 0.5f, 0.5f, 0.025f}; //b
     ships[2]  = (ship){11.3f, 1.93f, 0.5f, 0.67f, 0.015f};
@@ -1237,7 +1235,7 @@ int main(int argc, char** argv)
     register_m65();register_l65();register_h66();register_m66();register_l66();register_h67();register_m67();
     register_l67();
 
-    // friends 0-19 +Emoji (21)
+    // friends 0-19 +Emoji (20+1)
     register_f0();register_f1();register_f2();register_f3();register_f4();register_f5();register_f6();
     register_f7();register_f8();register_f9();register_f10();register_f11();register_f12();register_f13();
     register_f14();register_f15();register_f16();register_f17();register_f18();register_f19();register_emoji();
