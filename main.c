@@ -822,9 +822,9 @@ void main_loop()
                 bump.x /= bump_acc;
                 bump.y /= bump_acc;
                 bump.z /= bump_acc;
-                pp.x += bump.x*0.16f*dt;
-                pp.y += bump.y*0.16f*dt;
-                pp.z += bump.z*0.16f*dt;
+                // pp.x += bump.x*0.16f*dt;
+                // pp.y += bump.y*0.16f*dt;
+                // pp.z += bump.z*0.16f*dt;
                 pv = (vec){bump.x*pa*dt,
                            bump.y*pa*dt,
                            bump.z*pa*dt};
