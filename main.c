@@ -803,8 +803,18 @@ void main_loop()
                     bump.y += esModelArray[i].normals[j+1];
                     bump.z += esModelArray[i].normals[j+2];
                     bump_acc+=1.f;
-                    // could improve by checking if the normal is
-                    // within 180 degree facing the ship before summation.
+
+                    // // wasteful; attempts to reduce error by using a sqrt to CHECK to remove rare unwanted vectors  
+                    // vec vdir = (vec){esModelArray[i].normals[j], esModelArray[i].normals[j+1], esModelArray[i].normals[j+2]};
+                    // vec pdir = (vec){vx, vy, vz};
+                    // vSub(&pdir, pp, pdir);
+                    // vNorm(&pdir);
+                    // const float a = vDot(vdir, pdir); // improve by checking if the normal is pointing at ship
+                    // if(a > 0.75f)
+                    // {
+                    //     vAdd(&bump, bump, vdir);
+                    //     bump_acc += 1.f;
+                    // }
                 }
             }
             if(bump_acc > 0.f)
@@ -812,9 +822,9 @@ void main_loop()
                 bump.x /= bump_acc;
                 bump.y /= bump_acc;
                 bump.z /= bump_acc;
-                // pp.x += bump.x*0.16f*dt;
-                // pp.y += bump.y*0.16f*dt;
-                // pp.z += bump.z*0.16f*dt;
+                pp.x += bump.x*0.16f*dt;
+                pp.y += bump.y*0.16f*dt;
+                pp.z += bump.z*0.16f*dt;
                 pv = (vec){bump.x*pa*dt,
                            bump.y*pa*dt,
                            bump.z*pa*dt};
@@ -910,8 +920,6 @@ void main_loop()
                         bump.y += esModelArray[411+i].normals[j+1];
                         bump.z += esModelArray[411+i].normals[j+2];
                         bump_acc+=1.f;
-                        // could improve by checking if the normal is
-                        // within 180 degree facing the ship before summation.
                     }
                 }
                 if(bump_acc > 0.f)
