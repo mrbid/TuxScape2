@@ -512,7 +512,7 @@ float t=0.f, dt=0.f, lt=0.f, fc=0.f, lfct=0.f, fov=30.f, aspect;
 
 // camera vars
 #define FAR_DISTANCE 777.f
-uint focus_cursor = 0;
+uint lock_mouse = 0;
 uint free_look = 0;
 double sens = 0.003;
 double mx,my,lx,ly;
@@ -654,12 +654,53 @@ void resetGame(uint mode)
         mIdent(&projection);
         mPerspective(&projection, fov, aspect, 0.01f, FAR_DISTANCE);
         glUniformMatrix4fv(projection_id, 1, GL_FALSE, (float*)&projection.m[0][0]);
-
-        char strts[16];
-        timestamp(&strts[0]);
-        printf("[%s] Game Reset.\n", strts);
+        char strts[16];timestamp(&strts[0]);printf("[%s] Game Reset.\n", strts);
     }
     glfwSetWindowTitle(wnd, appTitle);
+}
+
+void processModelCollisionWithShip(uint model_id)
+{
+    const uint niter = esModelArray[model_id].nv*3;
+    vec bump = (vec){0.f, 0.f, 0.f}; // force against collision (bump back dir)
+    float bump_acc = 0.f;            // total to divide bump by at end
+    for(uint i = 0; i < niter; i+=3) // check if the ship hit any vertices and correct course
+    {
+        const float vx = esModelArray[model_id].vertices[i],
+                    vy = esModelArray[model_id].vertices[i+1],
+                    vz = esModelArray[model_id].vertices[i+2];
+        if(vDistSq((vec){vx, vy, vz}, pp) < esModelArray[vis].rsq)
+        {
+            bump.x += esModelArray[model_id].normals[i];
+            bump.y += esModelArray[model_id].normals[i+1];
+            bump.z += esModelArray[model_id].normals[i+2];
+            bump_acc+=1.f;
+
+            // // wasteful; attempts to reduce error by using a sqrt to CHECK to remove rare unwanted vectors  
+            // vec vdir = (vec){esModelArray[model_id].normals[i],
+            //                  esModelArray[model_id].normals[i+1],
+            //                  esModelArray[model_id].normals[i+2]};
+            // vec pdir = (vec){vx, vy, vz};
+            // vSub(&pdir, pp, pdir);
+            // vNorm(&pdir);
+            // const float a = vDot(vdir, pdir); // improve by checking if the normal is pointing at ship
+            // if(a > 0.75f)
+            // {
+            //     vAdd(&bump, bump, vdir);
+            //     bump_acc+=1.f;
+            // }
+        }
+    }
+    if(bump_acc > 0.f)
+    {
+        vMulS(&bump, bump, 1.f/bump_acc);
+        // pp.x += bump.x*0.16f*dt;
+        // pp.y += bump.y*0.16f*dt;
+        // pp.z += bump.z*0.16f*dt;
+        pv = (vec){ bump.x*pa*dt,
+                    bump.y*pa*dt,
+                    bump.z*pa*dt };
+    }
 }
 
 //*************************************
@@ -667,24 +708,14 @@ void resetGame(uint mode)
 //*************************************
 void main_loop()
 {
-//*************************************
-// core logic
-//*************************************
-    fc++;
-    glfwPollEvents();
-    t = (float)glfwGetTime();
-    dt = t-lt;
-    lt = t;
-
+    // tick fps count, poll events, time, delta time, last time.
+    fc++;glfwPollEvents();t=(float)glfwGetTime(),dt=t-lt,lt=t; 
 #ifdef WEB
     EmscriptenPointerlockChangeEvent e;
     if(emscripten_get_pointerlock_status(&e) == EMSCRIPTEN_RESULT_SUCCESS)
     {
-        if(focus_cursor == 0 && e.isActive == 1)
-        {
-            glfwGetCursorPos(wnd, &lx, &ly);
-        }
-        focus_cursor = e.isActive;
+        if(lock_mouse == 0 && e.isActive == 1){glfwGetCursorPos(wnd, &lx, &ly);}
+        lock_mouse = e.isActive;
     }
 #endif
 
@@ -692,68 +723,32 @@ void main_loop()
 // game logic
 //*************************************
 
-    // inputs
-    if(ks[2] == 1) // W
-    {
-        pv.x += sinf(pr)*pa*dt;
-        pv.y += cosf(pr)*pa*dt;
-    }
-    else if(ks[3] == 1) // S
-    {
-        pv.x -= sinf(pr)*pa*dt;
-        pv.y -= cosf(pr)*pa*dt;
-    }
-    ///
-    if(ks[0] == 1) // A
-    {
-        pv.x += sinf(pr-d2PI)*pa*pss*dt;
-        pv.y += cosf(pr-d2PI)*pa*pss*dt;
-    }
-    else if(ks[1] == 1) // D
-    {
-        pv.x -= sinf(pr-d2PI)*pa*pss*dt;
-        pv.y -= cosf(pr-d2PI)*pa*pss*dt;
-    }
-    ///
-    if(ks[4] == 1) // SPACE
-    {
-        pv.z += pa*pes*dt;
-    }
-    else if(ks[5] == 1) // SHIFT
-    {
-        pv.z -= pa*pes*dt;
-    }
-
-    // ship braking
-    pv.x *= 1.f-(pb*dt);
-    pv.y *= 1.f-(pb*dt);
-    pv.z *= 1.f-(pb*dt);
-
-    // ship pos
-    pp.x += pv.x*dt;
-    pp.y += pv.y*dt;
-    pp.z += pv.z*dt;
-
-    // zoom glide
-    dzoom += (zoom-dzoom)*3.f*dt;
+    // ship(player) inputs & simulation
+    /**/ if(ks[2]==1){pv.x += sinf(pr)*pa*dt, pv.y += cosf(pr)*pa*dt;} // W
+    else if(ks[3]==1){pv.x -= sinf(pr)*pa*dt, pv.y -= cosf(pr)*pa*dt;} // S
+    /**/ if(ks[0]==1){pv.x += sinf(pr-d2PI)*pa*pss*dt, pv.y += cosf(pr-d2PI)*pa*pss*dt;} // A
+    else if(ks[1]==1){pv.x -= sinf(pr-d2PI)*pa*pss*dt, pv.y -= cosf(pr-d2PI)*pa*pss*dt;} // D
+    /**/ if(ks[4]==1){pv.z += pa*pes*dt;} // SPACE
+    else if(ks[5]==1){pv.z -= pa*pes*dt;} // SHIFT
+    vMulS(&pv, pv, 1.f-(pb*dt));                       // ship braking
+    pp.x += pv.x*dt, pp.y += pv.y*dt, pp.z += pv.z*dt; // ship pos
 
     // camera
-    if(focus_cursor == 1)
+    if(lock_mouse == 1)
     {
         glfwGetCursorPos(wnd, &mx, &my);
         static float sx=0.0,sy=0.0; // mouse smoothing
         sx = ((float)((lx-mx)*sens)+sx)*0.5f, xrot += sx, lx = mx;
         sy = ((float)((ly-my)*sens)+sy)*0.5f, yrot += sy, ly = my;
         if(free_look > 0){if(yrot > PI  ){yrot = PI;  }else if(yrot < 0.f ){yrot = 0.f; }}
-        else             {if(yrot > d2PI){yrot = d2PI;}else if(yrot < 0.5f){yrot = 0.5f;}}
+        else/* regular */{if(yrot > d2PI){yrot = d2PI;}else if(yrot < 0.5f){yrot = 0.5f;}}
     }
     mIdent(&view);
+    dzoom += (zoom-dzoom)*3.f*dt; // zoom glide
     mSetPos(&view, (vec){0.f, 0.f, dzoom});
     mRotate(&view, yrot, 1.f, 0.f, 0.f);
     mRotate(&view, xrot, 0.f, 0.f, 1.f);
     mTranslate(&view, -pp.x, -pp.y+0.017f, -pp.z-0.075f);
-
-    //printf("%f %f %f %f %f %f \n", pp.x, pp.y, pp.z, pr, xrot, yrot);
 
 //*************************************
 // render
@@ -776,49 +771,7 @@ void main_loop()
             glEnable(GL_BLEND);
             glUniform1f(opacity_id, 1.f-((ppd-1111.f)*0.00030003f));
         }
-        if(ppd < esModelArray[i].rsq*3.3f)
-        {
-            const uint niter = esModelArray[i].nv*3;
-            vec bump = (vec){0.f, 0.f, 0.f}; // force against collision (bump back dir)
-            float bump_acc = 0.f; // total to divide bump by at end
-            for(uint j = 0; j < niter; j+=3) // check if the ship hit any vertices and correct course
-            {
-                const float vx = esModelArray[i].vertices[j],
-                            vy = esModelArray[i].vertices[j+1],
-                            vz = esModelArray[i].vertices[j+2];
-                if(vDistSq((vec){vx, vy, vz}, pp) < esModelArray[vis].rsq)
-                {
-                    bump.x += esModelArray[i].normals[j];
-                    bump.y += esModelArray[i].normals[j+1];
-                    bump.z += esModelArray[i].normals[j+2];
-                    bump_acc+=1.f;
-
-                    // // wasteful; attempts to reduce error by using a sqrt to CHECK to remove rare unwanted vectors  
-                    // vec vdir = (vec){esModelArray[i].normals[j], esModelArray[i].normals[j+1], esModelArray[i].normals[j+2]};
-                    // vec pdir = (vec){vx, vy, vz};
-                    // vSub(&pdir, pp, pdir);
-                    // vNorm(&pdir);
-                    // const float a = vDot(vdir, pdir); // improve by checking if the normal is pointing at ship
-                    // if(a > 0.75f)
-                    // {
-                    //     vAdd(&bump, bump, vdir);
-                    //     bump_acc += 1.f;
-                    // }
-                }
-            }
-            if(bump_acc > 0.f)
-            {
-                bump.x /= bump_acc;
-                bump.y /= bump_acc;
-                bump.z /= bump_acc;
-                // pp.x += bump.x*0.16f*dt;
-                // pp.y += bump.y*0.16f*dt;
-                // pp.z += bump.z*0.16f*dt;
-                pv = (vec){bump.x*pa*dt,
-                           bump.y*pa*dt,
-                           bump.z*pa*dt};
-            }
-        }
+        if(ppd < esModelArray[i].rsq*3.3f){processModelCollisionWithShip(i);}
 
         // render
         if(i != 2){esBindRender(i);} 
@@ -886,44 +839,16 @@ void main_loop()
     {
         if(emoji[i].w <= -444.f)
         {
+            const uint fid = 411+i; // friend model id
+            
             // ship collision with friend
-            const float ppd = vDistSq(esModelArray[411+i].pos,  pp);
+            const float ppd = vDistSq(esModelArray[fid].pos,  pp);
             if(ppd > 4444.f){continue;}else if(ppd > 1111.f)
             {
                 glEnable(GL_BLEND);
                 glUniform1f(opacity_id, 1.f-((ppd-1111.f)*0.00030003f));
             }
-            if(ppd < esModelArray[411+i].rsq*3.3f)
-            {
-                const uint niter = esModelArray[411+i].nv*3;
-                vec bump = (vec){0.f, 0.f, 0.f}; // force against collision (bump back dir)
-                float bump_acc = 0.f; // total to divide bump by at end
-                for(uint j = 0; j < niter; j+=3) // check if the ship hit any vertices and correct course
-                {
-                    const float vx = esModelArray[411+i].vertices[j],
-                                vy = esModelArray[411+i].vertices[j+1],
-                                vz = esModelArray[411+i].vertices[j+2];
-                    if(vDistSq((vec){vx, vy, vz}, pp) < esModelArray[vis].rsq)
-                    {
-                        bump.x += esModelArray[411+i].normals[j];
-                        bump.y += esModelArray[411+i].normals[j+1];
-                        bump.z += esModelArray[411+i].normals[j+2];
-                        bump_acc+=1.f;
-                    }
-                }
-                if(bump_acc > 0.f)
-                {
-                    bump.x /= bump_acc;
-                    bump.y /= bump_acc;
-                    bump.z /= bump_acc;
-                    // pp.x += bump.x*0.16f*dt;
-                    // pp.y += bump.y*0.16f*dt;
-                    // pp.z += bump.z*0.16f*dt;
-                    pv = (vec){ bump.x*pa*dt,
-                                bump.y*pa*dt,
-                                bump.z*pa*dt };
-                }
-            }
+            if(ppd < esModelArray[fid].rsq*3.3f){processModelCollisionWithShip(fid);}
 
             // fade in / render
             const float d = -(emoji[i].w+444.f);
@@ -933,7 +858,7 @@ void main_loop()
                 glUniform1f(opacity_id, d);
             }
             toView();
-            esBindRender(411+i);
+            esBindRender(fid);
             if(d < 1.f || ppd > 1111.f)
             {
                 glDisable(GL_BLEND);
@@ -1024,7 +949,7 @@ void main_loop()
 //*************************************
 void key_callback(GLFWwindow* wnd, int key, int scancode, int action, int mods)
 {
-    if(focus_cursor == 0){return;}
+    if(lock_mouse == 0){return;}
     if(action == GLFW_PRESS)
     {
         if(     key == GLFW_KEY_LEFT  || key == GLFW_KEY_A){ks[0]=1;}
@@ -1036,50 +961,39 @@ void key_callback(GLFWwindow* wnd, int key, int scancode, int action, int mods)
                 key == GLFW_KEY_RIGHT_SHIFT)               {ks[5]=1;}
         else if(key == GLFW_KEY_E)
         {
-            uint nid=sid;
-            float nd=0.16f;
+            uint nid=sid; float nd=0.16f;
             for(uint i=0; i < MAX_SHIPS; i++)
             {
                 if(i==sid){continue;}
                 const float d = vDistSq(ships[i].pos, pp);
-                if(d < nd)
-                {
-                    nid = i;
-                    nd = d;
-                }
+                if(d < nd){ nid = i; nd = d; }
             }
             if(nid != sid)
             {
                 ships[sid].vel = (vec){0.f,0.f,0.f};
-                sid = nid;
-                xrot = -ships[sid].rot;
+                sid = nid; xrot = -ships[sid].rot;
             }
         }
         else if(key == GLFW_KEY_F) // show average fps
         {
             if(t-lfct > 2.0)
             {
-                char strts[16];
-                timestamp(&strts[0]);
+                char strts[16];timestamp(&strts[0]);
                 printf("[%s] FPS: %g\n", strts, fc/(t-lfct));
-                lfct = t;
-                fc = 0;
+                lfct = t; fc = 0;
             }
         }
-        else if(key == GLFW_KEY_R) // reset game
-        {
-            resetGame(1);
-        }
-        else if(key == GLFW_KEY_C)
+        else if(key == GLFW_KEY_R){resetGame(1);} // reset game
+        else if(key == GLFW_KEY_C) // change FOV
         {
             if(fov==60.f){fov=30.f;}else{fov=60.f;}
             mIdent(&projection);
             mPerspective(&projection, fov, aspect, 0.01f, FAR_DISTANCE);
             glUniformMatrix4fv(projection_id, 1, GL_FALSE, (float*)&projection.m[0][0]);
         }
-        else if(key == GLFW_KEY_ESCAPE)
+        else if(key == GLFW_KEY_ESCAPE) // unlock mouse
         {
-            focus_cursor = 0;
+            lock_mouse = 0;
 #ifndef WEB
             glfwSetInputMode(wnd, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
             glfwGetCursorPos(wnd, &lx, &ly);
@@ -1099,13 +1013,11 @@ void key_callback(GLFWwindow* wnd, int key, int scancode, int action, int mods)
 }
 void scroll_callback(GLFWwindow* wnd, double xoffset, double yoffset)
 {
-    if(focus_cursor == 0){return;}
-
+    if(lock_mouse == 0){return;}
     // if(yoffset < 0.0){vis-=3;sid--;}else{vis+=3;sid++;}
     // if(vis < 207){vis=408;sid=67;}else if(vis > 408){vis=207;sid=0;}
     // xrot = -ships[sid].rot;
     // //printf("[S-%u] %g %g %g %g %g\n",sid,pa,pb,pes,pss,pts);
-
     if(yoffset < 0.0){zoom += 0.24f * zoom;}else{zoom -= 0.24f * zoom;}
     if(zoom > -0.33f){zoom = -0.33f;}else if(zoom < -1.3f){zoom = -1.3f;}
 }
@@ -1113,14 +1025,14 @@ void mouse_button_callback(GLFWwindow* wnd, int button, int action, int mods)
 {
     if(action != GLFW_PRESS)
     {
-        if(focus_cursor == 1 && button == GLFW_MOUSE_BUTTON_RIGHT){free_look=0;}
+        if(lock_mouse == 1 && button == GLFW_MOUSE_BUTTON_RIGHT){free_look=0;}
         return;
     }
     if(button == GLFW_MOUSE_BUTTON_LEFT)
     {
-        if(focus_cursor == 0)
+        if(lock_mouse == 0)
         {
-            focus_cursor = 1;
+            lock_mouse = 1;
 #ifndef WEB
             glfwSetInputMode(wnd, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
             glfwGetCursorPos(wnd, &lx, &ly);
@@ -1184,7 +1096,7 @@ int main(int argc, char** argv)
     // regular start
     int msaa = 16;
 #ifdef WEB
-    focus_cursor = 0;
+    lock_mouse = 0;
 #endif
 
     // help
@@ -1240,7 +1152,7 @@ int main(int argc, char** argv)
     const GLFWvidmode* desktop = glfwGetVideoMode(glfwGetPrimaryMonitor());
 #ifndef WEB
     glfwSetWindowPos(wnd, (desktop->width/2)-(winw/2), (desktop->height/2)-(winh/2)); // center window on desktop
-    if(focus_cursor == 1)
+    if(lock_mouse == 1)
     {
         glfwGetCursorPos(wnd, &lx, &ly);
         glfwSetInputMode(wnd, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
