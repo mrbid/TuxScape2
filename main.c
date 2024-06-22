@@ -742,19 +742,10 @@ void main_loop()
     {
         glfwGetCursorPos(wnd, &mx, &my);
         static float sx=0.0,sy=0.0; // mouse smoothing
-        sx = ((float)((lx-mx)*sens)+sx)*0.5f, xrot += sx;
-        sy = ((float)((ly-my)*sens)+sy)*0.5f, yrot += sy;
-        if(free_look > 0)
-        {
-            if(yrot > PI){yrot = PI;}
-            else if(yrot < 0.f){yrot = 0.f;}
-        }
-        else
-        {
-            if(yrot > d2PI){yrot = d2PI;}
-            else if(yrot < 0.5f){yrot = 0.5f;}
-        }
-        lx = mx, ly = my;
+        sx = ((float)((lx-mx)*sens)+sx)*0.5f, xrot += sx, lx = mx;
+        sy = ((float)((ly-my)*sens)+sy)*0.5f, yrot += sy, ly = my;
+        if(free_look > 0){if(yrot > PI  ){yrot = PI;  }else if(yrot < 0.f ){yrot = 0.f; }}
+        else             {if(yrot > d2PI){yrot = d2PI;}else if(yrot < 0.5f){yrot = 0.5f;}}
     }
     mIdent(&view);
     mSetPos(&view, (vec){0.f, 0.f, dzoom});
