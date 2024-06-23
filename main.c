@@ -547,10 +547,10 @@ vec emoji[20];
 //*************************************
 void unoccludedRandWorldPos(vec* v)
 {
-    const float rad=esRandFloat(20.f, 120.f), angle=esRandFloat(-PI, PI);
     vec p; uint good=1;
     do
     {
+        const float rad=esRandFloat(20.f, 120.f), angle=esRandFloat(-PI, PI);
         p = (vec){sinf(angle)*rad, p.y = cosf(angle)*rad, p.z = esRandFloat(-8.f, 8.f)};
         good=1;
         for(uint i=0; i<207; i++) // planets
