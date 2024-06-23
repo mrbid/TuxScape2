@@ -545,18 +545,33 @@ vec emoji[20];
 //*************************************
 // game functions
 //*************************************
+void unoccludedRandWorldPos(vec* v)
+{
+    const float rad=esRandFloat(20.f, 120.f), angle=esRandFloat(-PI, PI);
+    vec p; uint good=1;
+    do
+    {
+        p = (vec){sinf(angle)*rad, p.y = cosf(angle)*rad, p.z = esRandFloat(-8.f, 8.f)};
+        good=1;
+        for(uint i=0; i<207; i++) // planets
+        {
+            if(vDistSq(esModelArray[i].pos, p) < esModelArray[i].rsq*3.3f){good=0;}
+        }
+        for(uint i=0; i<20; i++) // friends
+        {
+            const uint fid = 411+i;
+            if(vDistSq(esModelArray[fid].pos, p) < esModelArray[fid].rsq*3.3f){good=0;}
+        }
+    }
+    while(good == 0);
+    *v = p; //return p;
+}
 void resetGame(uint mode)
 {
     sid=67;
     vis=207+(sid*3);
 
-    for(uint i=0; i < 20; i++)
-    {
-        const float rad=esRandFloat(20.f, 120.f), angle=esRandFloat(-PI, PI);
-        emoji[i].x = sinf(angle)*rad;
-        emoji[i].y = cosf(angle)*rad;
-        emoji[i].z = esRandFloat(-8.f, 8.f);
-    }
+    for(uint i=0; i < 20; i++){unoccludedRandWorldPos(&emoji[i]);}
     
     ships[0]  = (ship){3.f, 2.3f, 0.5f, 0.5f, 0.005f};
     ships[1]  = (ship){9.f, 2.3f, 0.5f, 0.5f, 0.025f}; //b
@@ -629,11 +644,7 @@ void resetGame(uint mode)
     for(uint i=0; i < MAX_SHIPS; i++)
     {
         if(i == sid){continue;}
-        const float rad = esRandFloat(20.f, 120.f);
-        const float angle = esRandFloat(-PI, PI);
-        ships[i].pos.x = sinf(angle)*rad;
-        ships[i].pos.y = cosf(angle)*rad;
-        ships[i].pos.z = esRandFloat(-8.f, 8.f);
+        unoccludedRandWorldPos(&ships[i].pos);
         ships[i].vel = (vec){0.f,0.f,0.f};
         ships[i].rot = esRandFloat(-PI, PI);
     }
@@ -772,7 +783,7 @@ void main_loop()
         if(ppd < esModelArray[i].rsq*3.3f){processModelCollisionWithShip(i);}
 
         // render
-        if(i != 2){esBindRender(i);} 
+        if(i != 2){esBindRender(i);}
         if(ppd > 1111.f){glDisable(GL_BLEND);}
     }
     
@@ -1091,21 +1102,14 @@ int main(int argc, char** argv)
     // }
     // return 0;
 
-    // regular start
-    int msaa = 16;
-#ifdef WEB
-    lock_mouse = 0;
-#endif
-
     // help
     printf("----\n");
     printf("James William Fletcher (github.com/mrbid)\n");
     printf("%s - Inspir3d by RunEscape.\n", appTitle);
     printf("----\n");
+    int msaa = 16;
 #ifndef WEB
-    // allow custom msaa level
     if(argc >= 2){msaa = atoi(argv[1]);}
-
     printf("One command line argument, msaa 0-16.\n");
     printf("e.g; ./tuxscape2 16\n");
     printf("----\n");
@@ -1150,11 +1154,6 @@ int main(int argc, char** argv)
     const GLFWvidmode* desktop = glfwGetVideoMode(glfwGetPrimaryMonitor());
 #ifndef WEB
     glfwSetWindowPos(wnd, (desktop->width/2)-(winw/2), (desktop->height/2)-(winh/2)); // center window on desktop
-    if(lock_mouse == 1)
-    {
-        glfwGetCursorPos(wnd, &lx, &ly);
-        glfwSetInputMode(wnd, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    }
 #endif
     glfwSetWindowSizeCallback(wnd, window_size_callback);
     glfwSetKeyCallback(wnd, key_callback);
@@ -1246,11 +1245,9 @@ int main(int argc, char** argv)
     makeLambert();
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+    glClearColor(0.f, 0.f, 0.f, 0.f);
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
-
-    glClearColor(0.f, 0.f, 0.f, 0.f);
 
     shadeLambert(&position_id, &projection_id, &modelview_id, &lightpos_id, &normal_id, &color_id, &ambient_id, &saturate_id, &opacity_id);
     glUniform1f(ambient_id, 0.26f);
