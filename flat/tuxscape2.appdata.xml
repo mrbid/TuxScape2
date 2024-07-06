@@ -10,6 +10,7 @@
 	<description>
 		<p>Explore Space, collect all 20 emoji's to reveal 20 cool characters and try flying the other 68 space ships that are randomly dotted around.</p>
 		<ul>
+			<li>ESCAPE to release mouse lock.</li>
 			<li>Mouse Scroll to Zoom In and Out.</li>
 			<li>Mouse Move to Look Around.</li>
 			<li>Arrow Keys or WASD to Move Around.</li>
