@@ -1114,6 +1114,7 @@ int main(int argc, char** argv)
     printf("e.g; ./tuxscape2 16\n");
     printf("----\n");
 #endif
+    printf("ESCAPE to release mouse lock.\n");
     printf("Mouse Scroll to Zoom In and Out.\n");
     printf("Mouse Move to Look Around.\n");
     printf("Arrow Keys or WASD to Move Around.\n");
